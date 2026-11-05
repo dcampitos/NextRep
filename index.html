@@ -662,6 +662,15 @@ function levelInfo(xp) {
   const s = 50 * L * (L - 1), n = 50 * (L + 1) * L;
   return { L: L, into: xp - s, need: n - s, next: n - xp };
 }
+/* program progress: finished required blocks out of every required block planned in the whole plan */
+function progressInfo(P) {
+  const days = {}; const L = P.log || {};
+  Object.keys(P.weeks || {}).forEach(wk => { const m = parseD(wk); for (let i = 0; i < 7; i++) days[dstr(addDays(m, i))] = 1; });
+  Object.keys(P.moves || {}).forEach(k => { days[P.moves[k].to] = 1; });
+  let total = 0, done = 0;
+  Object.keys(days).forEach(ds => { const inf = dayInfo(P, ds); const LL = L[ds] || {}; total += inf.req.length; inf.req.forEach(b => { if (LL[b.id] && LL[b.id].done) done++; }); });
+  return { done: done, total: total, pct: total ? Math.round(done / total * 100) : 0 };
+}
 function streakStats(P, todayStr) {
   let cur = 0, best = 0, run = 0;
   const L = P.log || {};
@@ -973,10 +982,10 @@ function programWeek(P, ds) {
   return Math.max(1, Math.floor(Math.round((mondayOf(parseD(ds)) - parseD(P.started)) / 864e5) / 7) + 1);
 }
 function levelCard(P) {
-  const xp = xpTotal(P), lv = levelInfo(xp);
-  return '<div class="level"><div class="row1"><span class="lv">LEVEL ' + lv.L + '</span><span class="muted" style="font-size:13px">' + xp.toLocaleString() + ' XP</span></div>' +
-    '<div class="bar" role="progressbar" aria-label="Progress to next level" aria-valuemin="0" aria-valuemax="' + lv.need + '" aria-valuenow="' + lv.into + '"><b style="width:' + Math.round(lv.into / lv.need * 100) + '%"></b></div>' +
-    '<div class="muted" style="font-size:12.5px;margin-top:6px">' + lv.next + ' XP to level ' + (lv.L + 1) + '</div></div>';
+  const pr = progressInfo(P);
+  return '<div class="level"><div class="row1"><span class="lv">PROGRAM ' + pr.pct + '%</span><span class="muted" style="font-size:13px">' + pr.done + ' of ' + pr.total + ' blocks</span></div>' +
+    '<div class="bar" role="progressbar" aria-label="Program completed" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pr.pct + '"><b style="width:' + pr.pct + '%"></b></div>' +
+    '<div class="muted" style="font-size:12.5px;margin-top:6px">Every block you finish moves this up.</div></div>';
 }
 function todayView(P) {
   const t = todayStr(); const ds = S.date || t; const d = parseD(ds);
@@ -1024,7 +1033,6 @@ function todayView(P) {
     const done = L[b.id] && L[b.id].done; const num = pad(n);
     const mfr = movedFrom(P, ds, b.id); const mfd = mfr ? parseD(mfr) : null;
     const pc = partialCount(P, ds, b.id); const meta = (pc ? pc + ' of ' + b.items.length + ' moves done' : b.items.length + ' move' + (b.items.length === 1 ? '' : 's')) + ' · ' + esc(b.place) + (mfd ? ' · moved from ' + DAYS[(mfd.getDay() + 6) % 7] + ' ' + mfd.getDate() + ' ' + MONTHS[mfd.getMonth()] : '');
-    const xp = blockXp(b);
     if (done) {
       const vn = b.items.filter(i => i.video).length;
       rows += '<button class="item done" data-act="review" data-bid="' + b.id + '" aria-label="Open ' + esc(b.name) + ', completed"><div class="n">' + num + '</div><div class="t"><b>' + esc(b.name) + '</b><span>' + meta + ' · ' + (vn ? vn + ' video' + (vn === 1 ? '' : 's') : 'no videos') + '</span></div><div class="chk">' + ic('check', 15) + '</div></button>';
@@ -1034,11 +1042,11 @@ function todayView(P) {
     } else if (!nextShown && !isFuture) {
       nextShown = true;
       rows += '</div><div class="next"><div class="item"><div class="n">' + num + '</div><div class="t"><b>' + esc(b.name) + '</b><span>' + meta + '</span></div>' +
-        (b.boss ? '<span class="tag boss">POWER</span>' : '') + '<span class="xp">+' + xp + ' XP</span></div>' +
+        (b.boss ? '<span class="tag boss">POWER</span>' : '') + '</div>' +
         '<button class="btn accent big block" data-act="start" data-bid="' + b.id + '">' + (pc ? 'Continue ' : 'Start ') + ic('arrow', 18) + '</button><button class="mvlink" data-act="moveopen" data-bid="' + b.id + '">Move to another day</button></div><div class="list" style="margin-top:0;border-top:0">';
     } else {
       rows += '<div class="item2"><button class="item" data-act="start" data-bid="' + b.id + '"><div class="n muted">' + num + '</div><div class="t"><b>' + esc(b.name) + '</b><span>' + meta + '</span></div>' +
-        (b.boss ? '<span class="tag boss">POWER</span>' : '') + '<span class="xp">+' + xp + ' XP</span></button><button class="mvbtn" data-act="moveopen" data-bid="' + b.id + '" aria-label="Move ' + esc(b.name) + ' to another day">Move</button></div>';
+        (b.boss ? '<span class="tag boss">POWER</span>' : '') + '</button><button class="mvbtn" data-act="moveopen" data-bid="' + b.id + '" aria-label="Move ' + esc(b.name) + ' to another day">Move</button></div>';
     }
   });
   const ap = fmtAppt(P.appointment);
@@ -1070,7 +1078,7 @@ function weekView(P) {
     '<div class="list">' + rows + '</div><p class="hint" style="margin-top:12px">Tap a day to open it.</p>';
 }
 function statsView(P) {
-  const t = todayStr(); const xp = xpTotal(P), lv = levelInfo(xp), st = streakStats(P, t);
+  const t = todayStr(); const pr = progressInfo(P), st = streakStats(P, t);
   const reps = repsLogged(P); const L = P.log || {};
   // five weeks ending this week, shown as a calendar: one row per week, Monday to Sunday
   const mon0 = addDays(mondayOf(new Date()), -28);
@@ -1089,9 +1097,9 @@ function statsView(P) {
   }
   const bd = badgesOf(P, t);
   const badges = bd.map(b => '<div class="badge' + (b.got ? '' : ' locked') + '"><div class="d">' + ic(b.got ? 'trophy' : 'lock', 18) + '</div>' + esc(b.name) + '<small>' + esc(b.sub) + '</small></div>').join('');
-  return '<div class="hero"><div class="eyebrow">Your numbers</div><h1>Level<br><mark>' + lv.L + '.</mark></h1></div>' +
-    '<div class="level"><div class="row1"><span class="lv">' + xp.toLocaleString() + ' XP</span><span class="muted" style="font-size:13px">' + lv.next + ' to level ' + (lv.L + 1) + '</span></div>' +
-    '<div class="bar"><b style="width:' + Math.round(lv.into / lv.need * 100) + '%"></b></div></div>' +
+  return '<div class="hero"><div class="eyebrow">Your numbers</div><h1>Program<br><mark>' + pr.pct + '%.</mark></h1></div>' +
+    '<div class="level"><div class="row1"><span class="lv">' + pr.done + ' of ' + pr.total + ' blocks</span><span class="muted" style="font-size:13px">finished</span></div>' +
+    '<div class="bar"><b style="width:' + pr.pct + '%"></b></div></div>' +
     '<div class="stats"><div class="stat"><b>' + st.cur + '</b><span>day streak</span></div><div class="stat"><b>' + st.best + '</b><span>best streak</span></div><div class="stat"><b>' + reps.toLocaleString() + '</b><span>reps logged</span></div></div>' +
     '<div class="h2">Your last 5 weeks</div><p class="muted" style="margin:0 0 12px;font-size:14px">Each square is a day. A tick means you finished everything planned for it.</p><div class="heat">' + heat + '</div>' +
     '<div class="legend"><span><i class="sw full"></i>All done</span><span><i class="sw part"></i>Some done</span><span><i class="sw pain"></i>Pain flagged</span><span><i class="sw none"></i>Rest day or not done</span><span><i class="sw today"></i>Today</span></div>' +
@@ -1184,10 +1192,10 @@ function reviewView() {
   const rec = b.type === 'recovery';
   return '<div class="sheet" role="dialog" aria-modal="true" aria-label="' + esc(b.name) + '"><div class="wrap">' +
     '<div class="shead"><button class="icon-btn" data-act="reviewclose" aria-label="Close">' + ic('x', 18) + '</button><div class="t"><div class="eyebrow">' + DAYS_LONG[(d.getDay() + 6) % 7] + ' ' + d.getDate() + ' ' + MONTHS[d.getMonth()] + '</div><div class="disp" style="font-size:20px">' + esc(b.name) + '</div></div>' + (b.boss ? '<span class="tag boss">POWER</span>' : '') + '</div>' +
-    (e.done ? '<div class="cue" style="margin-top:18px"><b>Completed ' + esc(fmtDone(e.at, r.ds)) + '.</b> ' + (e.xp ? '+' + e.xp + ' XP earned.' : 'Marked as done.') + '</div>' : '<div class="cue" style="margin-top:18px"><b>Not done yet.</b> ' + (rec ? 'Do these moves, then mark it done.' : '') + '</div>') +
+    (e.done ? '<div class="cue" style="margin-top:18px"><b>Completed ' + esc(fmtDone(e.at, r.ds)) + '.</b> ' + 'Marked as done.' + '</div>' : '<div class="cue" style="margin-top:18px"><b>Not done yet.</b> ' + (rec ? 'Do these moves, then mark it done.' : '') + '</div>') +
     '<div class="rvs">' + rows + '</div>' +
     '<div class="actions">' + (rec && !e.done ? '<button class="btn" data-act="reviewclose">Close</button><button class="btn accent" data-act="tick" data-bid="' + b.id + '">Mark done</button>' : rec ? '<button class="btn" data-act="untick" data-ds="' + r.ds + '" data-bid="' + b.id + '">Mark as not done</button>' : '<button class="btn" data-act="reviewclose">Close</button><button class="btn" data-act="untick" data-ds="' + r.ds + '" data-bid="' + b.id + '">Mark as not done</button><button class="btn accent" data-act="redo" data-ds="' + r.ds + '" data-bid="' + b.id + '">Do it again</button>') + '</div>' +
-    (rec ? '' : '<p class="hint" style="margin-top:10px">Doing it again replaces these results when you finish. XP is only counted once.</p>') + '</div></div>';
+    (rec ? '' : '<p class="hint" style="margin-top:10px">Doing it again replaces these results when you finish. It only counts once towards your progress.</p>') + '</div></div>';
 }
 
 /* ===== workout session ===== */
@@ -1276,13 +1284,13 @@ async function savePartial() {
 function partialCount(P, ds, bid) { const e = ((P.log || {})[ds] || {})[bid]; return e && !e.done && e.items ? Object.keys(e.items).length : 0; }
 async function finishBlock() {
   const s = S.session; const P = PP(); const b = blocksById(P)[s.bid];
-  const before = xpTotal(P), lvBefore = levelInfo(before).L, stBefore = streakStats(P, todayStr()).cur;
+  const before = progressInfo(P).pct, stBefore = streakStats(P, todayStr()).cur;
   const log = clone((S.logDoc && S.logDoc.log) || {});
   log[s.ds] = log[s.ds] || {};
   log[s.ds][b.id] = { done: true, at: Date.now(), xp: blockXp(b), boss: !!b.boss, items: s.data };
   S.logDoc = Object.assign({}, S.logDoc, { id: S.code, log: log });
-  const P2 = PP(); const after = xpTotal(P2); const info = dayInfo(P2, s.ds); const lv = levelInfo(after);
-  S.cele = { name: b.name, gained: after - before, dayDone: info.complete, levelUp: lv.L > lvBefore, level: lv.L, streak: streakStats(P2, todayStr()).cur, pain: Object.keys(s.data).some(k => s.data[k].pain), lv: lv };
+  const P2 = PP(); const prg = progressInfo(P2); const after = prg.pct; const info = dayInfo(P2, s.ds);
+  S.cele = { name: b.name, gained: after - before, pct: after, done: prg.done, total: prg.total, dayDone: info.complete, streak: streakStats(P2, todayStr()).cur, pain: Object.keys(s.data).some(k => s.data[k].pain) };
   S.session = null; render();
   try { await Store.setDoc('logs', S.code, S.logDoc); } catch (e) { reportErr(e); }
 }
@@ -1290,11 +1298,11 @@ function celeView() {
   const c = S.cele; let conf = '';
   for (let i = 0; i < 24; i++) conf += '<i style="left:' + (i * 4.2 + (i % 3)) + '%;animation-delay:' + ((i % 8) * .3).toFixed(1) + 's;animation-duration:' + (2.4 + (i % 5) * .3).toFixed(1) + 's"></i>';
   return '<div class="cele" role="dialog" aria-modal="true" aria-label="Block cleared"><div class="conf" aria-hidden="true">' + conf + '</div><div class="in">' +
-    (c.levelUp ? '<div class="eyebrow" style="color:var(--inv-muted)">Level up</div><div class="lvbig">' + c.level + '</div>' : '<div class="eyebrow" style="color:var(--inv-muted)">' + esc(c.name) + '</div>') +
+    '<div class="eyebrow" style="color:var(--inv-muted)">' + esc(c.name) + '</div>' +
     '<h2>' + (c.dayDone ? 'Day<br><mark>cleared.</mark>' : 'Block<br><mark>cleared.</mark>') + '</h2>' +
-    '<div class="row"><div><b>+' + c.gained + '</b><span>XP earned</span></div><div><b>' + c.streak + '</b><span>day streak</span></div><div><b>' + c.level + '</b><span>level</span></div></div>' +
-    '<div class="bar" aria-hidden="true"><b style="width:' + Math.round(c.lv.into / c.lv.need * 100) + '%"></b></div>' +
-    '<div class="muted" style="font-size:13px;margin:6px 0 0;color:var(--inv-muted)">' + c.lv.next + ' XP to level ' + (c.level + 1) + '</div>' +
+    '<div class="row"><div><b>' + c.pct + '%</b><span>program done</span></div><div><b>' + c.streak + '</b><span>day streak</span></div><div><b>' + c.done + '/' + c.total + '</b><span>blocks</span></div></div>' +
+    '<div class="bar" aria-hidden="true"><b style="width:' + c.pct + '%"></b></div>' +
+    '<div class="muted" style="font-size:13px;margin:6px 0 0;color:var(--inv-muted)">' + (c.gained > 0 ? '+' + c.gained + '% from this block' : 'Block logged') + '</div>' +
     (c.pain ? '<p style="margin:16px 0 0;font-size:13.5px">You flagged pain. Your physio will see it before your next visit.</p>' : '') +
     '<div style="margin-top:26px"><button class="btn accent big block" data-act="celeclose">Back to today</button></div></div></div>';
 }
@@ -1302,7 +1310,7 @@ function celeView() {
 /* ===== physio ===== */
 function patientCards(ids) {
   return ids.map(id => {
-    const P = PP(id); const t = todayStr(); const st = streakStats(P, t); const lv = levelInfo(xpTotal(P));
+    const P = PP(id); const t = todayStr(); const st = streakStats(P, t); const pg = progressInfo(P);
     const flags = painFlags(P).filter(f => !f.reviewed).length; const la = lastActive(P);
     const idle = la && (Date.now() - la) > 3 * 86400000;
     const info = dayInfo(P, t);
@@ -1312,7 +1320,7 @@ function patientCards(ids) {
     else if (idle) flag = '<span class="flag nudge">Nudge</span>';
     else flag = '<span class="flag ok">On track</span>';
     return '<button class="pcard" data-act="openpatient" data-id="' + id + '"><div class="top2"><div><h3>' + esc(P.name) + (P.age ? ' · ' + esc(P.age) : '') + '</h3><div class="muted" style="font-size:13px">' + esc(P.injury) + '</div></div>' + flag + '</div>' +
-      '<div class="muted" style="font-size:13px">Week ' + programWeek(P, t) + ' · ' + st.cur + ' day streak · Level ' + lv.L + '</div>' +
+      '<div class="muted" style="font-size:13px">Week ' + programWeek(P, t) + ' · ' + st.cur + ' day streak · ' + pg.pct + '% complete</div>' +
       '<div class="muted" style="font-size:13px">' + ago(la) + (!P.archived && info.planned && info.req.length ? ' · Today ' + info.done + ' of ' + info.req.length + ' done' : '') + (P.archived && P.archivedAt ? ' · archived ' + new Date(P.archivedAt).getDate() + ' ' + MONTHS[new Date(P.archivedAt).getMonth()] : '') + '</div>' +
       (P.sample ? '<div><span class="tag">SAMPLE</span></div>' : '') + '</button>';
   }).join('');
@@ -1414,8 +1422,8 @@ function activityTab(P) {
     const fl = flags.filter(f => f.ds === ds).map(f => '<div class="flag" style="display:inline-block;margin:4px 6px 0 0">Pain: ' + esc(f.move) + '</div>').join('');
     list += '<div class="rowx"><div class="l"><b>' + DAYS[(d.getDay() + 6) % 7] + ' ' + d.getDate() + ' ' + MONTHS[d.getMonth()] + (i === 0 ? ' (today)' : '') + '</b><div class="muted" style="font-size:13px">' + (done.length ? done.join(', ') : 'Nothing logged') + '</div>' + fl + '</div><span class="tag">' + status + '</span></div>';
   }
-  const st = streakStats(P, t), lv = levelInfo(xpTotal(P));
-  return '<div class="stats"><div class="stat"><b>' + st.cur + '</b><span>day streak</span></div><div class="stat"><b>' + lv.L + '</b><span>level</span></div><div class="stat"><b>' + repsLogged(P).toLocaleString() + '</b><span>reps logged</span></div></div>' +
+  const st = streakStats(P, t), pg = progressInfo(P);
+  return '<div class="stats"><div class="stat"><b>' + st.cur + '</b><span>day streak</span></div><div class="stat"><b>' + pg.pct + '%</b><span>complete</span></div><div class="stat"><b>' + repsLogged(P).toLocaleString() + '</b><span>reps logged</span></div></div>' +
     (unrev.length ? '<div class="card" style="margin-top:16px;border-color:var(--alert)"><b style="color:var(--alert)">' + unrev.length + ' pain flag' + (unrev.length > 1 ? 's' : '') + ' to review</b><div class="muted" style="font-size:13px;margin:4px 0 10px">' + unrev.slice(0, 4).map(f => esc(f.move) + ' (' + esc(f.block) + ', ' + f.ds + ')').join('; ') + '</div><button class="btn sm" data-act="reviewed">Mark as reviewed</button></div>' : '') +
     '<div class="h2">Last 14 days</div>' + list;
 }
@@ -1518,7 +1526,7 @@ function blockModal() {
     '<div class="field"><label for="bl_name">Block name</label><input id="bl_name" class="input" data-f="name" value="' + esc(D.name) + '" placeholder="Gym Rehab 3"></div>' +
     '<div class="field"><label for="bl_type">Kind</label><select id="bl_type" class="input" data-f="type">' + opt(BLOCK_TYPES, D.type) + '</select></div>' +
     '<div class="field"><label for="bl_place">Where</label><select id="bl_place" class="input" data-f="place">' + places + '</select></div></div>' +
-    '<label style="display:flex;gap:8px;align-items:center;margin-top:12px;font-size:13.5px"><input type="checkbox" data-f="boss"' + (D.boss ? ' checked' : '') + '> Power block (extra XP for the patient)</label>' +
+    '<label style="display:flex;gap:8px;align-items:center;margin-top:12px;font-size:13.5px"><input type="checkbox" data-f="boss"' + (D.boss ? ' checked' : '') + '> Power block (highlighted for the patient)</label>' +
     items + '<div class="actions"><button class="btn" data-act="addmv">' + ic('plus', 16) + ' Add a move</button></div>' +
     (S.err ? '<div class="err" style="margin-top:10px" role="alert">' + esc(S.err) + '</div>' : '') +
     '<div class="actions"><button class="btn" data-act="mclose">Cancel</button><button class="btn accent" data-act="saveblock">Save block</button>' + (S.modal.isNew ? '' : '<button class="btn danger" data-act="delblock">Delete block</button>') + '</div>';
