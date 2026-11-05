@@ -365,6 +365,8 @@ button.dd:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 .prac{margin-top:12px;gap:10px;font-size:14px;line-height:1.25;align-items:center}
 .prac img{height:36px;max-width:96px}
 .prac span{overflow:visible;text-overflow:clip;white-space:normal;overflow-wrap:anywhere}
+.top .brand{font-size:28px;line-height:1;flex:0 0 auto}
+.sqd{display:inline-block;width:.17em;height:.17em;background:currentColor;margin-left:.08em;vertical-align:baseline}
 
 </style>
 </head><body><div id="app"></div>
@@ -910,7 +912,7 @@ function renderOverlay() {
 /* ===== gate ===== */
 function gateView() {
   return '<div class="wrap gate">' +
-    '<div class="brand">NEXTREP</div>' +
+    '<div class="brand">NEXTREP<i class="sqd"></i></div>' +
     '<h1>Your plan.<br><mark>Every day.</mark></h1>' +
     '<p class="muted" style="margin:0">Exercises from your physio, ready for each day until your next visit.</p>' +
     '<form id="codeForm" class="field" autocomplete="off"><label for="codeIn">Your code</label>' +
@@ -925,14 +927,14 @@ function gateView() {
 /* ===== patient app ===== */
 function patientView() {
   const P = PP();
-  if (!P || !S.logDoc) return '<div class="wrap"><div class="top"><div class="brand">NEXTREP</div></div><p class="muted">Loading your plan…</p></div>';
+  if (!P || !S.logDoc) return '<div class="wrap"><div class="top"><div class="brand">NEXTREP<i class="sqd"></i></div></div><p class="muted">Loading your plan…</p></div>';
   const t = todayStr(), st = streakStats(P, t);
   let body = '';
   if (S.tab === 'today') body = todayView(P);
   else if (S.tab === 'week') body = weekView(P);
   else body = statsView(P);
   const nm = String(P.name || '').trim();
-  return '<div class="wrap"><div class="top"><div class="who"><div class="brand">NEXTREP</div></div>' +
+  return '<div class="wrap"><div class="top"><div class="who"><div class="brand">NEXTREP<i class="sqd"></i></div></div>' +
     '<div style="display:flex;gap:10px;align-items:flex-start;flex:0 0 auto"><div class="streak" style="margin-top:4px">' + ic('flame', 16) + st.cur + ' DAY STREAK</div>' +
     '<div class="acct"><button class="icon-btn sm" data-act="menu" aria-label="Account menu" aria-haspopup="dialog">' + avatar(P.photo, 36) + '</button>' + (nm ? '<span class="acname">' + esc(nm) + '</span>' : '') + '</div></div></div>' + practiceLine() +
     body + '</div>' +
@@ -1327,7 +1329,7 @@ function dashView(ids) {
     (rows.length ? '<div class="dashwrap"><div class="dash">' + head + body + '</div></div>' : '<div class="empty">No active patients yet.</div>');
 }
 function physioView() {
-  const top = '<div class="top"><div class="who"><div class="brand">NEXTREP<small>PHYSIO</small></div></div><div style="display:flex;gap:8px"><button class="btn sm" data-act="practice">Practice</button><button class="btn sm" data-act="signout">Sign out</button></div></div>' + practiceLine();
+  const top = '<div class="top"><div class="who"><div class="brand">NEXTREP<i class="sqd"></i></div></div><div style="display:flex;gap:8px"><button class="btn sm" data-act="practice">Practice</button><button class="btn sm" data-act="signout">Sign out</button></div></div>' + practiceLine();
   if (S.sel && S.plans[S.sel]) return '<div class="wrap wide">' + top + physioDetail() + '</div>';
   const all = Object.keys(S.plans).sort((a, b) => S.plans[a].name.localeCompare(S.plans[b].name));
   const ids = all.filter(id => !S.plans[id].archived), arch = all.filter(id => S.plans[id].archived);
