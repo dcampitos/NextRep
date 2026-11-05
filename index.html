@@ -368,6 +368,18 @@ button.dd:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 .top .brand{font-size:28px;line-height:1;flex:0 0 auto}
 .sqd{display:inline-block;width:.17em;height:.17em;background:currentColor;margin-left:.08em;vertical-align:baseline}
 
+.top .brand{font-size:38px}
+.prac{margin-top:8px;gap:8px;font-size:12.5px}
+.prac img{height:26px;max-width:72px}
+button.phav{padding:0;background:none;cursor:zoom-in}
+.zoom{position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.78);display:flex;align-items:center;justify-content:center;padding:16px;cursor:zoom-out}
+.zbox{position:relative;width:min(86vw,340px);height:min(86vw,340px);background:var(--surface);border:3px solid var(--ink)}
+.zbox img{width:100%;height:100%;object-fit:cover;display:block}
+.zx{position:absolute;top:-16px;right:-16px;width:36px;height:36px;border-radius:50%;border:2px solid var(--ink);background:var(--bg);color:var(--ink);font:700 22px/1 var(--body);cursor:pointer}
+
+.top .brand{white-space:nowrap}
+.srt{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
 </style>
 </head><body><div id="app"></div>
 <div id="modal"></div>
@@ -790,6 +802,19 @@ const ic = (n, s) => '<svg width="' + (s || 20) + '" height="' + (s || 20) + '" 
 
 S.practice = null;
 function avatar(photo, size) { size = size || 36; return photo ? '<img class="avimg" src="' + esc(photo) + '" alt="" width="' + size + '" height="' + size + '">' : ic('user', Math.round(size * .5)); }
+function phav(photo, who) {
+  return photo ? '<button class="phav zoomable" data-act="photoview" data-who="' + who + '" aria-label="View photo larger">' + avatar(photo, 64) + '</button>' : '<span class="phav">' + avatar(photo, 64) + '</span>';
+}
+function showZoom(src) {
+  const old = document.getElementById('zoom'); if (old) old.remove();
+  const z = document.createElement('div'); z.id = 'zoom'; z.className = 'zoom'; z.setAttribute('role', 'dialog'); z.setAttribute('aria-modal', 'true'); z.setAttribute('aria-label', 'Profile photo');
+  z.innerHTML = '<div class="zbox"><img alt="Profile photo"><button class="zx" aria-label="Close photo">&times;</button></div>';
+  z.querySelector('img').src = src;
+  const close = () => { z.remove(); document.removeEventListener('keydown', onk); };
+  const onk = e => { if (e.key === 'Escape') close(); };
+  z.addEventListener('click', close); document.addEventListener('keydown', onk);
+  document.body.appendChild(z);
+}
 function practiceLine(big) {
   const pr = S.practice; if (!pr || (!pr.name && !pr.logo)) return '';
   return '<div class="prac' + (big ? ' big' : '') + '">' + (pr.logo ? '<img src="' + esc(pr.logo) + '" alt="">' : '') + (pr.name ? '<span>' + esc(pr.name) + '</span>' : '') + '</div>';
@@ -935,7 +960,7 @@ function patientView() {
   else body = statsView(P);
   const nm = String(P.name || '').trim();
   return '<div class="wrap"><div class="top"><div class="who"><div class="brand">NEXTREP<i class="sqd"></i></div></div>' +
-    '<div style="display:flex;gap:10px;align-items:flex-start;flex:0 0 auto"><div class="streak" style="margin-top:4px">' + ic('flame', 16) + st.cur + ' DAY STREAK</div>' +
+    '<div style="display:flex;gap:10px;align-items:flex-start;flex:0 0 auto"><div class="streak" style="margin-top:4px">' + ic('flame', 16) + st.cur + '<span class="srt"> DAY STREAK</span></div>' +
     '<div class="acct"><button class="icon-btn sm" data-act="menu" aria-label="Account menu" aria-haspopup="dialog">' + avatar(P.photo, 36) + '</button>' + (nm ? '<span class="acname">' + esc(nm) + '</span>' : '') + '</div></div></div>' + practiceLine() +
     body + '</div>' +
     '<nav class="tabs" aria-label="Main"><div class="in">' +
@@ -1078,7 +1103,7 @@ function statsView(P) {
 function menuView() {
   const P = PP(); const ap = fmtAppt(P.appointment);
   return '<div class="menu-back" data-act="menuback"><div class="menu-box" role="dialog" aria-modal="true" aria-label="Account">' +
-    '<div class="phrow"><span class="phav">' + avatar(P.photo, 64) + '</span><span><label class="btn sm filebtn">' + (P.photo ? 'Change photo' : 'Add photo') + '<input type="file" accept="image/*" data-file="mephoto" hidden></label>' + (P.photo ? ' <button class="btn sm" data-act="rmmephoto">Remove</button>' : '') + '</span></div>' +
+    '<div class="phrow">' + phav(P.photo, 'me') + '<span><label class="btn sm filebtn">' + (P.photo ? 'Change photo' : 'Add photo') + '<input type="file" accept="image/*" data-file="mephoto" hidden></label>' + (P.photo ? ' <button class="btn sm" data-act="rmmephoto">Remove</button>' : '') + '</span></div>' +
     '<div class="disp" style="font-size:26px;margin-top:12px">' + esc(P.name) + '</div>' +
     '<div class="muted" style="font-size:13.5px;margin-top:2px">' + esc(P.injury) + '</div>' +
     '<div style="margin-top:12px;font-size:13.5px"><b>Your physio:</b> ' + esc(P.physio) + '</div>' +
@@ -1404,7 +1429,7 @@ function blocksTab(P) {
 function profileTab(P) {
   if (!S.draft || S.draft.__for !== P.id) S.draft = { __for: P.id, name: P.name, age: P.age, injury: P.injury, goal: P.goal, physio: P.physio, physioEmail: P.physioEmail || '', note: P.note, appointment: P.appointment || '', started: P.started };
   const D = S.draft; const f = (k, label, type) => '<div class="field"><label for="pf_' + k + '">' + label + '</label><input id="pf_' + k + '" class="input" type="' + (type || 'text') + '" data-f="' + k + '" value="' + esc(D[k]) + '"></div>';
-  return '<div class="h2" style="margin-top:20px">Profile</div><div class="phrow" style="margin-bottom:14px"><span class="phav">' + avatar(P.photo, 64) + '</span><span><label class="btn sm filebtn">' + (P.photo ? 'Change photo' : 'Add photo') + '<input type="file" accept="image/*" data-file="pphoto" hidden></label>' + (P.photo ? ' <button class="btn sm" data-act="rmpphoto">Remove</button>' : '') + '</span></div><div class="fgrid">' + f('name', 'Name') + f('age', 'Age') + f('physio', 'Physio name') + f('physioEmail', 'Physio email', 'email') + '</div>' +
+  return '<div class="h2" style="margin-top:20px">Profile</div><div class="phrow" style="margin-bottom:14px">' + phav(P.photo, 'p') + '<span><label class="btn sm filebtn">' + (P.photo ? 'Change photo' : 'Add photo') + '<input type="file" accept="image/*" data-file="pphoto" hidden></label>' + (P.photo ? ' <button class="btn sm" data-act="rmpphoto">Remove</button>' : '') + '</span></div><div class="fgrid">' + f('name', 'Name') + f('age', 'Age') + f('physio', 'Physio name') + f('physioEmail', 'Physio email', 'email') + '</div>' +
     '<div class="fgrid" style="margin-top:12px">' + f('injury', 'Injury') + f('goal', 'Goal') + '</div>' +
     '<div class="field" style="margin-top:12px"><label for="pf_note">Note shown on their home screen</label><textarea id="pf_note" class="input" data-f="note">' + esc(D.note) + '</textarea></div>' +
     '<div class="fgrid" style="margin-top:12px">' + f('appointment', 'Next appointment', 'datetime-local') + f('started', 'Program start (Monday)', 'date') + '</div>' +
@@ -1591,6 +1616,7 @@ document.addEventListener('click', async e => {
     }
     case 'closesession': S.session.leave = true; renderOverlay(); break;
     case 'menu': S.menu = true; renderOverlay(); break;
+    case 'photoview': { if (P && P.photo) showZoom(P.photo); break; }
     case 'rmmephoto': {
       S.logDoc = Object.assign({}, S.logDoc, { id: S.code, log: (S.logDoc && S.logDoc.log) || {}, photo: '' });
       if (S.plan && S.plan.photo) { /* physio-set photo stays as fallback */ }
