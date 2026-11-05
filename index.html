@@ -362,6 +362,10 @@ button.dd:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 .pbtn{min-height:36px;padding:0 12px;border:2px solid var(--ink);background:transparent;font:700 13px var(--body);color:var(--ink)}
 .pbtn.on{background:var(--alert);border-color:var(--alert);color:var(--bg)}
 
+.prac{margin-top:12px;gap:10px;font-size:14px;line-height:1.25;align-items:center}
+.prac img{height:36px;max-width:96px}
+.prac span{overflow:visible;text-overflow:clip;white-space:normal;overflow-wrap:anywhere}
+
 </style>
 </head><body><div id="app"></div>
 <div id="modal"></div>
@@ -928,9 +932,9 @@ function patientView() {
   else if (S.tab === 'week') body = weekView(P);
   else body = statsView(P);
   const nm = String(P.name || '').trim();
-  return '<div class="wrap"><div class="top"><div class="who"><div class="brand">NEXTREP</div>' + practiceLine() + '</div>' +
+  return '<div class="wrap"><div class="top"><div class="who"><div class="brand">NEXTREP</div></div>' +
     '<div style="display:flex;gap:10px;align-items:flex-start;flex:0 0 auto"><div class="streak" style="margin-top:4px">' + ic('flame', 16) + st.cur + ' DAY STREAK</div>' +
-    '<div class="acct"><button class="icon-btn sm" data-act="menu" aria-label="Account menu" aria-haspopup="dialog">' + avatar(P.photo, 36) + '</button>' + (nm ? '<span class="acname">' + esc(nm) + '</span>' : '') + '</div></div></div>' +
+    '<div class="acct"><button class="icon-btn sm" data-act="menu" aria-label="Account menu" aria-haspopup="dialog">' + avatar(P.photo, 36) + '</button>' + (nm ? '<span class="acname">' + esc(nm) + '</span>' : '') + '</div></div></div>' + practiceLine() +
     body + '</div>' +
     '<nav class="tabs" aria-label="Main"><div class="in">' +
     tabBtn('today', 'Today', 'home') + tabBtn('week', 'Week', 'cal') + tabBtn('stats', 'Stats', 'chart') + '</div></nav>';
@@ -1323,7 +1327,7 @@ function dashView(ids) {
     (rows.length ? '<div class="dashwrap"><div class="dash">' + head + body + '</div></div>' : '<div class="empty">No active patients yet.</div>');
 }
 function physioView() {
-  const top = '<div class="top"><div class="who"><div class="brand">NEXTREP<small>PHYSIO</small></div>' + practiceLine() + '</div><div style="display:flex;gap:8px"><button class="btn sm" data-act="practice">Practice</button><button class="btn sm" data-act="signout">Sign out</button></div></div>';
+  const top = '<div class="top"><div class="who"><div class="brand">NEXTREP<small>PHYSIO</small></div></div><div style="display:flex;gap:8px"><button class="btn sm" data-act="practice">Practice</button><button class="btn sm" data-act="signout">Sign out</button></div></div>' + practiceLine();
   if (S.sel && S.plans[S.sel]) return '<div class="wrap wide">' + top + physioDetail() + '</div>';
   const all = Object.keys(S.plans).sort((a, b) => S.plans[a].name.localeCompare(S.plans[b].name));
   const ids = all.filter(id => !S.plans[id].archived), arch = all.filter(id => S.plans[id].archived);
@@ -1442,7 +1446,7 @@ function dayModal() {
 function practiceModal() {
   const D = S.draft;
   return '<h2>Your practice</h2><p class="muted" style="margin-top:0">Shown under the NextRep logo for you and all your patients.</p>' +
-    '<div class="field"><label for="pr_name">Practice name</label><input id="pr_name" class="input" data-f="name" value="' + esc(D.name) + '" placeholder="Dr Fit Physiotherapy"></div>' +
+    '<div class="field"><label for="pr_name">Practice name</label><input id="pr_name" class="input" data-f="name" value="' + esc(D.name) + '" placeholder="e.g. Your Clinic Name Physiotherapy"></div>' +
     '<div class="phrow" style="margin-top:12px"><span class="phav sq">' + (D.logo ? '<img class="avimg" src="' + esc(D.logo) + '" alt="">' : '<span class="muted" style="font-size:11px">No logo</span>') + '</span><span><label class="btn sm filebtn">' + (D.logo ? 'Change logo' : 'Add logo') + '<input type="file" accept="image/*" data-file="logo" hidden></label>' + (D.logo ? ' <button class="btn sm" data-act="rmlogo">Remove</button>' : '') + '</span></div>' +
     '<div class="actions"><button class="btn" data-act="mclose">Cancel</button><button class="btn accent" data-act="savepractice">Save</button></div>';
 }
