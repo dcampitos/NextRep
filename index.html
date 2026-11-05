@@ -358,6 +358,10 @@ button.dd:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 .dn{align-self:stretch;display:flex;align-items:center;box-shadow:4px 0 0 var(--surface),0 4px 0 var(--surface),0 -4px 0 var(--surface)}
 .dh.corner{box-shadow:4px 3px 0 var(--surface);align-self:stretch;display:flex;align-items:flex-end}
 
+.painrow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px;padding:10px 12px;border:1.5px solid var(--line);font-size:13.5px;font-weight:600}
+.pbtn{min-height:36px;padding:0 12px;border:2px solid var(--ink);background:transparent;font:700 13px var(--body);color:var(--ink)}
+.pbtn.on{background:var(--alert);border-color:var(--alert);color:var(--bg)}
+
 </style>
 </head><body><div id="app"></div>
 <div id="modal"></div>
@@ -988,7 +992,7 @@ function todayView(P) {
     n++;
     const done = L[b.id] && L[b.id].done; const num = pad(n);
     const mfr = movedFrom(P, ds, b.id); const mfd = mfr ? parseD(mfr) : null;
-    const meta = b.items.length + ' move' + (b.items.length === 1 ? '' : 's') + ' · ' + esc(b.place) + (mfd ? ' · moved from ' + DAYS[(mfd.getDay() + 6) % 7] + ' ' + mfd.getDate() + ' ' + MONTHS[mfd.getMonth()] : '');
+    const pc = partialCount(P, ds, b.id); const meta = (pc ? pc + ' of ' + b.items.length + ' moves done' : b.items.length + ' move' + (b.items.length === 1 ? '' : 's')) + ' · ' + esc(b.place) + (mfd ? ' · moved from ' + DAYS[(mfd.getDay() + 6) % 7] + ' ' + mfd.getDate() + ' ' + MONTHS[mfd.getMonth()] : '');
     const xp = blockXp(b);
     if (done) {
       const vn = b.items.filter(i => i.video).length;
@@ -1000,7 +1004,7 @@ function todayView(P) {
       nextShown = true;
       rows += '</div><div class="next"><div class="item"><div class="n">' + num + '</div><div class="t"><b>' + esc(b.name) + '</b><span>' + meta + '</span></div>' +
         (b.boss ? '<span class="tag boss">POWER</span>' : '') + '<span class="xp">+' + xp + ' XP</span></div>' +
-        '<button class="btn accent big block" data-act="start" data-bid="' + b.id + '">Start ' + ic('arrow', 18) + '</button><button class="mvlink" data-act="moveopen" data-bid="' + b.id + '">Move to another day</button></div><div class="list" style="margin-top:0;border-top:0">';
+        '<button class="btn accent big block" data-act="start" data-bid="' + b.id + '">' + (pc ? 'Continue ' : 'Start ') + ic('arrow', 18) + '</button><button class="mvlink" data-act="moveopen" data-bid="' + b.id + '">Move to another day</button></div><div class="list" style="margin-top:0;border-top:0">';
     } else {
       rows += '<div class="item2"><button class="item" data-act="start" data-bid="' + b.id + '"><div class="n muted">' + num + '</div><div class="t"><b>' + esc(b.name) + '</b><span>' + meta + '</span></div>' +
         (b.boss ? '<span class="tag boss">POWER</span>' : '') + '<span class="xp">+' + xp + ' XP</span></button><button class="mvbtn" data-act="moveopen" data-bid="' + b.id + '" aria-label="Move ' + esc(b.name) + ' to another day">Move</button></div>';
@@ -1045,10 +1049,11 @@ function statsView(P) {
     if (i % 7 === 0) heat += '<div class="wl">' + (i === 28 ? 'This week' : i === 21 ? 'Last week' : dd.getDate() + ' ' + MONTHS[dd.getMonth()]) + '</div>';
     const hasPain = Object.keys(L[s] || {}).some(b => Object.keys((L[s][b].items) || {}).some(k => L[s][b].items[k].pain));
     let c = 'none', g = '', lbl = 'rest day or nothing logged';
-    if (s > t) { c = 'fut'; lbl = 'coming up'; }
+    const anyLog = Object.keys(L[s] || {}).length > 0;
+    if (s > t && !hasPain && !inf.done && !anyLog) { c = 'fut'; lbl = 'coming up'; }
     else if (hasPain) { c = 'pain'; g = '!'; lbl = 'pain flagged'; }
     else if (inf.complete) { c = 'full'; g = ic('check', 14); lbl = 'all done'; }
-    else if (inf.done > 0) { c = 'part'; lbl = 'some done'; }
+    else if (inf.done > 0 || anyLog) { c = 'part'; lbl = 'some done'; }
     heat += '<div class="dc ' + c + (s === t ? ' today' : '') + '" aria-label="' + dd.getDate() + ' ' + MONTHS[dd.getMonth()] + ': ' + lbl + '"><span class="dn">' + dd.getDate() + '</span>' + g + '</div>';
   }
   const bd = badgesOf(P, t);
@@ -1141,7 +1146,7 @@ function reviewView() {
     if (it.unit === 'check') res = x || e.done ? 'Ticked off' : 'Not logged';
     else if (x && x.sets && x.sets.length) res = x.sets.map(s => it.unit === 'sec' ? s.r + 's' : (it.weighted && s.kg ? s.r + ' × ' + s.kg + 'kg' : String(s.r))).join(', ');
     else res = 'Not logged';
-    const fl = x && x.feel && it.unit !== 'check' ? '<span class="tag' + (x.pain ? ' boss' : '') + '">' + feelL[x.feel] + '</span>' : '';
+    const fl = x && x.feel && (it.unit !== 'check' || x.pain) ? '<span class="tag' + (x.pain ? ' boss' : '') + '">' + feelL[x.feel] + '</span>' : '';
     const v = it.video ? '<a class="rvlink" href="' + esc(it.video) + '" target="_blank" rel="noopener noreferrer">' + ic('play', 14) + 'Watch demo on YouTube</a>' : '<div class="rvno">No video for this move</div>';
     return '<div class="rv"><div class="rvt"><b>' + esc(it.name) + '</b>' + fl + '</div><div class="muted" style="font-size:13.5px">' + esc(targetLabel(it)) + ' · <span style="color:var(--ink)">' + esc(res) + '</span></div>' + v + '</div>';
   }).join('');
@@ -1150,7 +1155,7 @@ function reviewView() {
     '<div class="shead"><button class="icon-btn" data-act="reviewclose" aria-label="Close">' + ic('x', 18) + '</button><div class="t"><div class="eyebrow">' + DAYS_LONG[(d.getDay() + 6) % 7] + ' ' + d.getDate() + ' ' + MONTHS[d.getMonth()] + '</div><div class="disp" style="font-size:20px">' + esc(b.name) + '</div></div>' + (b.boss ? '<span class="tag boss">POWER</span>' : '') + '</div>' +
     (e.done ? '<div class="cue" style="margin-top:18px"><b>Completed ' + esc(fmtDone(e.at, r.ds)) + '.</b> ' + (e.xp ? '+' + e.xp + ' XP earned.' : 'Marked as done.') + '</div>' : '<div class="cue" style="margin-top:18px"><b>Not done yet.</b> ' + (rec ? 'Do these moves, then mark it done.' : '') + '</div>') +
     '<div class="rvs">' + rows + '</div>' +
-    '<div class="actions">' + (rec && !e.done ? '<button class="btn" data-act="reviewclose">Close</button><button class="btn accent" data-act="tick" data-bid="' + b.id + '">Mark done</button>' : rec ? '<button class="btn" data-act="untick" data-ds="' + r.ds + '" data-bid="' + b.id + '">Mark as not done</button>' : '<button class="btn" data-act="reviewclose">Close</button><button class="btn accent" data-act="redo" data-ds="' + r.ds + '" data-bid="' + b.id + '">Do it again</button>') + '</div>' +
+    '<div class="actions">' + (rec && !e.done ? '<button class="btn" data-act="reviewclose">Close</button><button class="btn accent" data-act="tick" data-bid="' + b.id + '">Mark done</button>' : rec ? '<button class="btn" data-act="untick" data-ds="' + r.ds + '" data-bid="' + b.id + '">Mark as not done</button>' : '<button class="btn" data-act="reviewclose">Close</button><button class="btn" data-act="untick" data-ds="' + r.ds + '" data-bid="' + b.id + '">Mark as not done</button><button class="btn accent" data-act="redo" data-ds="' + r.ds + '" data-bid="' + b.id + '">Do it again</button>') + '</div>' +
     (rec ? '' : '<p class="hint" style="margin-top:10px">Doing it again replaces these results when you finish. XP is only counted once.</p>') + '</div></div>';
 }
 
@@ -1159,7 +1164,10 @@ function curMove() {
   const P = PP(); const s = S.session; const b = blocksById(P)[s.bid]; return { P: P, b: b, it: b.items[s.idx] };
 }
 function startSession(ds, bid) {
-  S.session = { ds: ds, bid: bid, idx: 0, data: {}, prog: {}, leave: false }; initMove(); renderOverlay();
+  S.session = { ds: ds, bid: bid, idx: 0, data: {}, prog: {}, leave: false };
+  const P = PP(); const b = blocksById(P)[bid]; const e = (((P.log || {})[ds] || {})[bid]);
+  if (b && e && !e.done && e.items) { S.session.data = clone(e.items); const first = b.items.findIndex(x => !S.session.data[x.id]); S.session.idx = first < 0 ? 0 : first; }
+  initMove(); renderOverlay();
 }
 function stashMove() {
   const s = S.session; const it = curMove().it;
@@ -1179,7 +1187,7 @@ function sessionView() {
   const doneN = Object.keys(s.data).length;
   const chips = c.b.items.map((x, i) => {
     const dn = !!s.data[x.id], cur = i === s.idx;
-    return '<button class="mchip' + (dn ? ' done' : '') + (cur ? ' cur' : '') + '"' + (dn || cur ? ' disabled' : ' data-act="gomove" data-i="' + i + '"') + (cur ? ' aria-current="step"' : '') + '><b>' + (dn ? ic('check', 14) : (i + 1)) + '</b><span>' + esc(x.name) + '</span></button>';
+    return '<button class="mchip' + (dn ? ' done' : '') + (cur ? ' cur' : '') + '"' + (cur ? ' disabled' : ' data-act="gomove" data-i="' + i + '"') + (cur ? ' aria-current="step"' : '') + '><b>' + (dn ? ic('check', 14) : (i + 1)) + '</b><span>' + esc(x.name) + '</span></button>';
   }).join('');
   const lastLeft = doneN + 1 >= n;
   let video = '';
@@ -1190,7 +1198,14 @@ function sessionView() {
   else if (it.unit !== 'check') video = '<div class="novid">No demo video for this move yet.</div>';
   let facts = '<span>' + esc(targetLabel(it)) + '</span><span>' + esc(c.b.place) + '</span>' + (it.weighted ? '<span>Weighted</span>' : '');
   let ctl = '';
-  if (s.stage === 'sets') {
+  const loggedX = s.data[it.id];
+  const painRow = '<div class="painrow"><span>Any pain on this move?</span><button class="pbtn' + (s.feel === 'pain' ? ' on' : '') + '" data-act="painflag" aria-pressed="' + (s.feel === 'pain') + '">' + (s.feel === 'pain' ? 'Pain flagged · tap to undo' : 'Flag pain') + '</button></div>';
+  if (loggedX) {
+    const feelL = { easy: 'Easy', ok: 'Just right', tough: 'Tough', pain: 'Pain' };
+    const res = it.unit === 'check' ? 'Ticked off' : (loggedX.sets || []).map(x => it.unit === 'sec' ? x.r + 's' : (it.weighted && x.kg ? x.r + ' × ' + x.kg + 'kg' : String(x.r))).join(', ');
+    ctl = '<div class="cue" style="margin-top:16px"><b>Done.</b> ' + esc(res) + (loggedX.pain ? ' · <b style="color:var(--alert)">Pain flagged</b>' : (it.unit !== 'check' && loggedX.feel ? ' · ' + feelL[loggedX.feel] : '')) + '</div>' +
+      '<div class="actions"><button class="btn big block" data-act="undomove">Mark as not done</button></div>';
+  } else if (s.stage === 'sets') {
     let sc = '';
     for (let i = 0; i < it.sets; i++) {
       const dn = s.sets[i];
@@ -1200,7 +1215,7 @@ function sessionView() {
     ctl = '<div class="sets">' + sc + '</div><div class="steps"' + (it.weighted ? '' : ' style="grid-template-columns:1fr"') + '>' +
       '<div class="step"><button data-act="adj" data-k="reps" data-d="-1" aria-label="Fewer">−</button><div><b>' + s.reps + '</b><span>' + unitLbl + '</span></div><button data-act="adj" data-k="reps" data-d="1" aria-label="More">+</button></div>' +
       (it.weighted ? '<div class="step"><button data-act="adj" data-k="kg" data-d="-2.5" aria-label="Lighter">−</button><div><b>' + s.kg + '</b><span>kg</span></div><button data-act="adj" data-k="kg" data-d="2.5" aria-label="Heavier">+</button></div>' : '') + '</div>' +
-      '<div class="actions"><button class="btn accent big block" data-act="logset">Log set ' + (s.sets.length + 1) + '</button></div>';
+      '<div class="actions"><button class="btn accent big block" data-act="logset">Log set ' + (s.sets.length + 1) + '</button></div>' + painRow;
   } else if (s.stage === 'feel') {
     const opts = [['easy', 'Easy'], ['ok', 'Just right'], ['tough', 'Tough'], ['pain', 'Pain']];
     ctl = '<div class="h2" style="margin-top:20px">How did that feel?</div><div class="feel" role="group" aria-label="How did that feel">' +
@@ -1208,9 +1223,9 @@ function sessionView() {
       (s.feel === 'pain' ? '<p class="hint bad" style="margin-top:10px">Your physio will see this. Stop if it is sharp or getting worse.</p>' : '') +
       '<div class="actions"><button class="btn accent big block" data-act="nextmove">' + (lastLeft ? 'Finish block' : 'Next move') + ' ' + ic('arrow', 18) + '</button></div>';
   } else {
-    ctl = '<div class="actions"><button class="btn accent big block" data-act="nextmove">' + (lastLeft ? 'Done. Finish block' : 'Done') + ' ' + ic('check', 18) + '</button></div>';
+    ctl = painRow + '<div class="actions"><button class="btn accent big block" data-act="nextmove">' + (lastLeft ? 'Done. Finish block' : 'Done') + ' ' + ic('check', 18) + '</button></div>';
   }
-  const leave = s.leave ? '<div class="leave-back" data-act="leaveback"><div class="leave-box" role="alertdialog" aria-labelledby="lvT" aria-describedby="lvD"><b id="lvT" class="disp" style="font-size:26px;display:block">Leave this block?</b><div id="lvD" class="muted" style="font-size:14px;margin:6px 0 16px">Moves you have not finished are not saved.</div><div class="actions" style="margin-top:0"><button class="btn" data-act="keepgoing">Keep going</button><button class="btn danger" data-act="leave">Leave</button></div></div></div>' : '';
+  const leave = s.leave ? '<div class="leave-back" data-act="leaveback"><div class="leave-box" role="alertdialog" aria-labelledby="lvT" aria-describedby="lvD"><b id="lvT" class="disp" style="font-size:26px;display:block">Leave this block?</b><div id="lvD" class="muted" style="font-size:14px;margin:6px 0 16px">Moves you have finished are saved. Come back any time to finish the rest.</div><div class="actions" style="margin-top:0"><button class="btn" data-act="keepgoing">Keep going</button><button class="btn danger" data-act="leave">Leave</button></div></div></div>' : '';
   return '<div class="sheet" role="dialog" aria-modal="true" aria-label="' + esc(c.b.name) + '"><div class="wrap">' +
     '<div class="shead"><button class="icon-btn" data-act="closesession" aria-label="Close">' + ic('x', 18) + '</button><div class="t"><div class="eyebrow">' + esc(c.b.name) + '</div><div class="disp" style="font-size:20px">Move ' + (s.idx + 1) + ' of ' + n + '</div></div>' +
     (c.b.boss ? '<span class="tag boss">POWER</span>' : '') + '</div>' +
@@ -1218,6 +1233,16 @@ function sessionView() {
     '<h2 class="mv-name">' + esc(it.name) + '</h2><div class="facts">' + facts + '</div>' +
     (it.note ? '<div class="cue"><b>' + esc(c.P.physio) + ':</b> ' + esc(it.note) + '</div>' : '') + ctl + '</div>' + leave + '</div>';
 }
+async function savePartial() {
+  const s = S.session; if (!s) return; const P = PP(); const b = blocksById(P)[s.bid]; if (!b) return;
+  const log = clone((S.logDoc && S.logDoc.log) || {});
+  const n = Object.keys(s.data).length;
+  if (n) { log[s.ds] = log[s.ds] || {}; log[s.ds][b.id] = { done: false, partial: true, at: Date.now(), xp: 0, items: clone(s.data) }; }
+  else if (log[s.ds] && log[s.ds][b.id] && !log[s.ds][b.id].done) { delete log[s.ds][b.id]; if (!Object.keys(log[s.ds]).length) delete log[s.ds]; }
+  S.logDoc = Object.assign({}, S.logDoc, { id: S.code, log: log });
+  try { await Store.setDoc('logs', S.code, S.logDoc); } catch (e) { reportErr(e); }
+}
+function partialCount(P, ds, bid) { const e = ((P.log || {})[ds] || {})[bid]; return e && !e.done && e.items ? Object.keys(e.items).length : 0; }
 async function finishBlock() {
   const s = S.session; const P = PP(); const b = blocksById(P)[s.bid];
   const before = xpTotal(P), lvBefore = levelInfo(before).L, stBefore = streakStats(P, todayStr()).cur;
@@ -1270,12 +1295,12 @@ function dashView(ids) {
     const cells = days.map(d => {
       const s = dstr(d), inf = dayInfo(P, s); const pain = fl.some(f => f.ds === s);
       let c = 'rest', g = '', lbl = 'rest day or nothing planned';
-      if (s > t) { c = 'fut'; lbl = 'coming up'; }
+      if (s > t && !inf.done && !pain) { c = 'fut'; lbl = 'coming up'; }
       else if (inf.planned && inf.req.length) {
         planned += inf.req.length; done += inf.done;
         if (inf.complete) { c = 'full'; g = ic('check', 14); lbl = 'all ' + inf.req.length + ' blocks done'; }
         else if (inf.done > 0) { c = 'part'; g = inf.done + '/' + inf.req.length; lbl = inf.done + ' of ' + inf.req.length + ' blocks done'; }
-        else if (s === t) { c = 'today'; lbl = 'today, nothing done yet'; }
+        else if (s >= t) { c = s === t ? 'today' : 'fut'; lbl = s === t ? 'today, nothing done yet' : 'coming up'; }
         else { c = 'miss'; g = ic('x', 12); lbl = 'missed ' + inf.req.length + ' block' + (inf.req.length === 1 ? '' : 's'); }
         if (s < t) missed += inf.req.length - inf.done;
       }
@@ -1404,7 +1429,7 @@ function dayModal() {
       const x = its[it.id]; let res = 'Not logged';
       if (it.unit === 'check') res = x || e.done ? 'Ticked off' : 'Not logged';
       else if (x && x.sets && x.sets.length) res = x.sets.map(s => it.unit === 'sec' ? s.r + 's' : (it.weighted && s.kg ? s.r + ' × ' + s.kg + 'kg' : String(s.r))).join(', ');
-      const fl = x && x.feel && it.unit !== 'check' ? ' <span class="tag' + (x.pain ? ' boss' : '') + '">' + feelL[x.feel] + '</span>' : '';
+      const fl = x && x.feel && (it.unit !== 'check' || x.pain) ? ' <span class="tag' + (x.pain ? ' boss' : '') + '">' + feelL[x.feel] + '</span>' : '';
       return '<div class="rowx" style="padding:8px 0"><div class="l"><b style="font-size:14px">' + esc(it.name) + '</b>' + fl + '<div class="muted" style="font-size:13px">' + esc(targetLabel(it)) + ' · <span style="color:var(--ink)">' + esc(res) + '</span></div></div></div>';
     }).join('');
     return '<div style="margin-top:14px"><div class="rowx" style="border:0;padding:0"><b>' + esc(b.name) + '</b><span class="tag">' + (e.done ? 'Done' : 'Not done') + '</span></div>' + (e.done ? '<div class="muted" style="font-size:12.5px">Completed ' + esc(fmtDone(e.at, M.ds)) + '</div>' : '') + rows + '</div>';
@@ -1593,14 +1618,18 @@ document.addEventListener('click', async e => {
     case 'feel': S.session.feel = d.v; renderOverlay(); break;
     case 'nextmove': {
       const s = S.session; const c = curMove();
-      s.data[c.it.id] = c.it.unit === 'check' ? { sets: [], feel: 'ok', pain: false } : { sets: s.sets, feel: s.feel, pain: s.feel === 'pain' };
+      s.data[c.it.id] = c.it.unit === 'check' ? { sets: [], feel: s.feel === 'pain' ? 'pain' : 'ok', pain: s.feel === 'pain' } : { sets: s.sets, feel: s.feel, pain: s.feel === 'pain' };
       const items = c.b.items;
       if (Object.keys(s.data).length >= items.length) { finishBlock(); break; }
       let nx = -1;
       for (let k = 1; k <= items.length; k++) { const j = (s.idx + k) % items.length; if (!s.data[items[j].id]) { nx = j; break; } }
-      s.idx = nx; initMove(); renderOverlay(); window.scrollTo(0, 0);
+      s.idx = nx; initMove(); renderOverlay(); window.scrollTo(0, 0); savePartial();
       break;
     }
+    case 'undomove': {
+      const s = S.session; const c = curMove(); delete s.data[c.it.id]; delete s.prog[c.it.id]; initMove(); renderOverlay(); savePartial(); showToast('Marked as not done'); break;
+    }
+    case 'painflag': { const s = S.session; s.feel = s.feel === 'pain' ? 'ok' : 'pain'; renderOverlay(); break; }
     case 'gomove': {
       const s = S.session; stashMove(); s.idx = Number(d.i); initMove(); renderOverlay(); window.scrollTo(0, 0); break;
     }
