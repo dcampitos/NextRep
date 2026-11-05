@@ -227,9 +227,8 @@ textarea.input{min-height:72px;resize:vertical}
 .invite .s{font-size:12.5px;color:var(--inv-muted)}
 
 /* modal */
-.mback{position:fixed;inset:0;z-index:50;background:rgba(17,17,17,.5);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);display:flex;align-items:flex-end;justify-content:center}
-.panel{background:var(--bg);width:100%;max-width:640px;max-height:92vh;overflow-y:auto;padding:18px max(16px,env(safe-area-inset-left,0px)) max(18px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-right,0px));border-top:3px solid var(--ink)}
-@media (min-width:700px){.mback{align-items:center}.panel{border:3px solid var(--ink)}}
+.mback{position:fixed;inset:0;z-index:50;background:rgba(17,17,17,.5);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:max(20px,env(safe-area-inset-top,0px)) max(20px,env(safe-area-inset-right,0px)) max(20px,env(safe-area-inset-bottom,0px)) max(20px,env(safe-area-inset-left,0px))}
+.panel{background:var(--bg);width:100%;max-width:640px;max-height:100%;overflow-y:auto;padding:18px max(16px,env(safe-area-inset-left,0px)) max(18px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-right,0px));border:3px solid var(--ink)}
 .panel h2{font-family:var(--display);font-weight:400;font-size:30px;text-transform:uppercase;margin:0 0 12px}
 .fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
 .mvbox{border:2px solid var(--line);background:var(--surface);padding:12px;margin-top:12px;display:flex;flex-direction:column;gap:10px}
@@ -248,8 +247,8 @@ textarea.input{min-height:72px;resize:vertical}
 
 /* account menu */
 .icon-btn.sm{width:36px;height:36px}
-.menu-back{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.5);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
-.menu-box{position:absolute;top:calc(env(safe-area-inset-top,0px) + 64px);right:max(16px,env(safe-area-inset-right,0px));width:min(300px,calc(100vw - 32px));padding:16px;border:2px solid var(--ink);background:var(--surface);background:color-mix(in srgb,var(--surface) 92%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.menu-back{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;padding:max(20px,env(safe-area-inset-top,0px)) max(20px,env(safe-area-inset-right,0px)) max(20px,env(safe-area-inset-bottom,0px)) max(20px,env(safe-area-inset-left,0px));background:rgba(0,0,0,.5);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+.menu-box{width:100%;max-width:340px;padding:20px;border:2px solid var(--ink);background:var(--surface);background:color-mix(in srgb,var(--surface) 92%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
 .vwrap{position:relative;width:100%;aspect-ratio:16/9;margin-top:14px;border:2px solid var(--ink);background:#000}
 .vwrap.short{aspect-ratio:9/16;width:min(100%,calc(44vh * 9 / 16));margin-inline:auto}
 .vwrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
@@ -305,6 +304,59 @@ textarea.input{min-height:72px;resize:vertical}
 .pchip:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .who{min-width:0;display:flex;flex-direction:column;gap:1px}
 .wname{font-size:12.5px;font-weight:600;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.item2{display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--line)}
+.item2 .item{border-bottom:0;flex:1;min-width:0}
+.mvbtn{flex:none;min-height:40px;padding:0 12px;border:2px solid var(--ink);background:var(--surface);color:var(--ink);font:700 13px var(--body);cursor:pointer}
+.mvlink{display:block;width:100%;margin-top:10px;min-height:44px;background:none;border:2px solid var(--inv-fg);color:var(--inv-fg);font:700 14px var(--body);cursor:pointer}
+.mvopts{display:flex;flex-direction:column;gap:8px;max-height:52vh;overflow-y:auto}
+.mvopt{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-height:48px;padding:8px 12px;border:2px solid var(--ink);background:var(--surface);color:var(--ink);text-align:left;font-family:var(--body);cursor:pointer}
+.mvopt b{font-size:15px}
+.mvopt span{font-size:12.5px;color:var(--muted)}
+.mvopt:disabled{border-color:var(--line);cursor:default;opacity:.7}
+.mvbtn:focus-visible,.mvlink:focus-visible,.mvopt:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+.dashwrap{margin-top:14px;overflow:auto;max-height:calc(100vh - 230px);min-height:260px;border:2px solid var(--ink);background:var(--surface)}
+.dash{display:grid;grid-template-columns:minmax(96px,130px) repeat(14,minmax(28px,1fr)) minmax(96px,120px);gap:4px;align-items:center;padding:0 10px 10px 0;min-width:760px}
+.dh{font-size:10.5px;font-weight:700;color:var(--muted);text-align:center;line-height:1.1}
+.dh b{display:block;font-size:12px;color:var(--ink)}
+.dh.tdy b{text-decoration:underline}
+.dn{background:none;border:0;padding:0;text-align:left;font:700 14px var(--body);color:var(--ink);text-decoration:underline;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dd{position:relative;height:34px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;background:var(--soft);color:var(--muted)}
+.dd.full{background:var(--accent);color:var(--on-accent)}
+.dd.part{background:linear-gradient(135deg,var(--accent) 50%,var(--soft) 50%);color:var(--ink)}
+.dd.miss{background:transparent;border:2px solid var(--alert);color:var(--alert)}
+.dd.fut{background:transparent;border:1.5px dashed var(--line)}
+.dd.rest{background:transparent;border:1px solid var(--line)}
+.dd.tdy{outline:2px solid var(--ink);outline-offset:1px}
+.dd .pn{position:absolute;top:-4px;right:-4px;width:14px;height:14px;display:grid;place-items:center;background:var(--alert);color:var(--bg);font:700 10px var(--body);font-style:normal}
+.dtot{font-size:12.5px;font-weight:700;line-height:1.2}
+.dtot.bad{color:var(--alert)}
+.dtot small{display:block;font-weight:500;color:var(--muted);font-size:11px}
+.dlegend{margin-top:12px}
+.sw.miss{background:transparent;border:2px solid var(--alert)}
+
+.acct{display:flex;flex-direction:column;align-items:center;gap:2px;max-width:76px}
+.acname{font-size:11px;font-weight:700;color:var(--muted);max-width:76px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.icon-btn{overflow:hidden;padding:0}
+.avimg{width:100%;height:100%;object-fit:cover;display:block;border-radius:50%}
+.prac{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--muted);min-width:0;margin-top:2px}
+.prac img{height:20px;max-width:56px;object-fit:contain;flex:0 0 auto}
+.prac span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.phrow{display:flex;align-items:center;gap:14px}
+.phav{width:64px;height:64px;border-radius:50%;border:2px solid var(--ink);display:inline-flex;align-items:center;justify-content:center;overflow:hidden;flex:0 0 auto}
+.phav.sq{border-radius:6px;width:96px}
+.phav.sq .avimg{border-radius:0;object-fit:contain}
+.filebtn{cursor:pointer}
+
+.dh{position:sticky;top:0;z-index:3;background:var(--surface);padding:10px 0 6px;box-shadow:0 3px 0 var(--surface)}
+.dh.corner{left:0;z-index:5;text-align:left;padding-left:10px}
+.dn{position:sticky;left:0;z-index:2;background:var(--surface);padding:6px 6px 6px 10px;box-shadow:4px 0 0 var(--surface)}
+button.dd{border:0;padding:0;font-family:var(--body);cursor:pointer}
+button.dd.miss{border:2px solid var(--alert)}
+button.dd:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.dn{align-self:stretch;display:flex;align-items:center;box-shadow:4px 0 0 var(--surface),0 4px 0 var(--surface),0 -4px 0 var(--surface)}
+.dh.corner{box-shadow:4px 3px 0 var(--surface);align-self:stretch;display:flex;align-items:flex-end}
 
 </style>
 </head><body><div id="app"></div>
@@ -551,10 +603,18 @@ function reportErr(e) { try { console.error(e); } catch (x) {} showToast('Could 
 
 /* ===== derived numbers: plan, XP, levels, streaks, badges ===== */
 function blocksById(P) { const m = {}; (P.blocks || []).forEach(b => { m[b.id] = b; }); return m; }
+/* a patient can move a block to another day; moves live in their own log doc: { "<from>_<blockId>": { from, bid, to } } */
+function movedIn(P, ds) { const m = P.moves || {}; return Object.keys(m).filter(k => m[k].to === ds).map(k => m[k].bid); }
+function movedOut(P, ds, id) { const m = P.moves || {}; return Object.keys(m).some(k => m[k].from === ds && m[k].bid === id); }
+function movedFrom(P, ds, id) { const m = P.moves || {}; const k = Object.keys(m).find(x => m[x].to === ds && m[x].bid === id); return k ? m[k].from : ''; }
 function planDay(P, ds) {
   const d = parseD(ds); const w = P.weeks && P.weeks[weekKey(d)];
-  if (!w) return null;
-  return w['d' + ((d.getDay() + 6) % 7)] || [];
+  const base = w ? (w['d' + ((d.getDay() + 6) % 7)] || []) : null;
+  const inn = movedIn(P, ds);
+  if (base === null && !inn.length) return null;
+  const out = (base || []).filter(id => !movedOut(P, ds, id));
+  inn.forEach(id => { if (out.indexOf(id) < 0) out.push(id); });
+  return out;
 }
 const isReq = b => b && b.type !== 'recovery';
 function dayInfo(P, ds) {
@@ -695,9 +755,9 @@ const todayStr = () => dstr(new Date());
 const $ = s => document.querySelector(s);
 
 function PP(id) {
-  if (S.role === 'patient') { if (!S.plan) return null; return Object.assign({}, S.plan, { log: (S.logDoc && S.logDoc.log) || {} }); }
+  if (S.role === 'patient') { if (!S.plan) return null; return Object.assign({}, S.plan, { log: (S.logDoc && S.logDoc.log) || {}, moves: (S.logDoc && S.logDoc.moves) || {}, photo: (S.logDoc && S.logDoc.photo) || S.plan.photo || '' }); }
   const p = S.plans[id || S.sel]; if (!p) return null;
-  return Object.assign({}, p, { log: (S.logs[p.id] && S.logs[p.id].log) || {} });
+  return Object.assign({}, p, { log: (S.logs[p.id] && S.logs[p.id].log) || {}, moves: (S.logs[p.id] && S.logs[p.id].moves) || {}, photo: (S.logs[p.id] && S.logs[p.id].photo) || p.photo || '' });
 }
 const IC = {
   flame: '<path d="M12 3c1 3 5 5 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3-1-6 1-9z"/>',
@@ -718,6 +778,30 @@ const IC = {
 };
 const ic = (n, s) => '<svg width="' + (s || 20) + '" height="' + (s || 20) + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + IC[n] + '</svg>';
 
+S.practice = null;
+function avatar(photo, size) { size = size || 36; return photo ? '<img class="avimg" src="' + esc(photo) + '" alt="" width="' + size + '" height="' + size + '">' : ic('user', Math.round(size * .5)); }
+function practiceLine(big) {
+  const pr = S.practice; if (!pr || (!pr.name && !pr.logo)) return '';
+  return '<div class="prac' + (big ? ' big' : '') + '">' + (pr.logo ? '<img src="' + esc(pr.logo) + '" alt="">' : '') + (pr.name ? '<span>' + esc(pr.name) + '</span>' : '') + '</div>';
+}
+function readImage(file, max, png, cb) {
+  if (!file || !/^image\//.test(file.type)) { showToast('Choose an image file'); return; }
+  const fr = new FileReader();
+  fr.onerror = () => showToast('Could not read that image');
+  fr.onload = () => {
+    const im = new Image();
+    im.onerror = () => showToast('Could not read that image');
+    im.onload = () => {
+      const k = Math.min(1, max / Math.max(im.width, im.height)), w = Math.max(1, Math.round(im.width * k)), h = Math.max(1, Math.round(im.height * k));
+      const c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d');
+      if (!png) { x.fillStyle = '#fff'; x.fillRect(0, 0, w, h); }
+      x.drawImage(im, 0, 0, w, h);
+      cb(png ? c.toDataURL('image/png') : c.toDataURL('image/jpeg', .85));
+    };
+    im.src = fr.result;
+  };
+  fr.readAsDataURL(file);
+}
 let toastT = null;
 function showToast(msg) {
   const t = $('#toast'); if (!t) return;
@@ -766,6 +850,7 @@ async function joinWithCode(raw) {
   let doc = null;
   try { doc = await Store.getDoc('patients', id); } catch (e) { doc = null; }
   if (!doc) { S.err = 'We could not find that code. Check it with your physio.'; render(); return; }
+  if (doc.archived) { S.err = 'This plan is not active. Check with your physio.'; render(); return; }
   enterPatient(doc.id);
 }
 function enterPatient(id) {
@@ -773,20 +858,22 @@ function enterPatient(id) {
   S.tab = 'today'; S.date = todayStr(); S.weekOff = 0; saveSession();
   S.unsubs.push(Store.watchDoc('patients', id, d => {
     S.plan = d; S.planLoaded = true;
-    if (!d) { S.err = 'That code is no longer active.'; signOut(); return; }
+    if (!d || d.archived) { S.err = 'That code is no longer active.'; signOut(); return; }
     render();
   }));
   S.unsubs.push(Store.watchDoc('logs', id, d => { S.logDoc = d || { id: id, log: {} }; render(); }));
+  S.unsubs.push(Store.watchDoc('meta', 'practice', d => { S.practice = d; render(); }));
   render();
 }
 function enterPhysio() {
   stopWatching(); S.role = 'physio'; S.sel = null; S.ptab = 'plan'; S.err = ''; saveSession();
   S.unsubs.push(Store.watchCollection('patients', o => { S.plans = o; render(); }));
   S.unsubs.push(Store.watchCollection('logs', o => { S.logs = o; render(); }));
+  S.unsubs.push(Store.watchDoc('meta', 'practice', d => { S.practice = d; render(); }));
   render();
 }
 function signOut() {
-  stopWatching(); S.role = null; S.code = null; S.plan = null; S.logDoc = null; S.remind = null; S.remChecked = false; S.session = null; S.review = null; S.place = ''; S.modal = null; S.cele = null; S.menu = false; clearSession(); render();
+  stopWatching(); S.role = null; S.code = null; S.plan = null; S.logDoc = null; S.remind = null; S.remChecked = false; S.session = null; S.review = null; S.moveSel = null; S.place = ''; S.modal = null; S.cele = null; S.menu = false; clearSession(); render();
 }
 
 /* ===== render dispatcher ===== */
@@ -804,6 +891,7 @@ function renderOverlay() {
   const o = $('#overlay');
   if (S.cele) o.innerHTML = celeView();
   else if (S.remind) o.innerHTML = remindView();
+  else if (S.moveSel) o.innerHTML = moveView();
   else if (S.session) o.innerHTML = sessionView();
   else if (S.review) o.innerHTML = reviewView();
   else if (S.menu && S.role === 'patient' && PP()) o.innerHTML = menuView();
@@ -835,10 +923,10 @@ function patientView() {
   if (S.tab === 'today') body = todayView(P);
   else if (S.tab === 'week') body = weekView(P);
   else body = statsView(P);
-  const nm = String(P.name || '').trim(); const poss = nm ? nm + (/s$/i.test(nm) ? "'" : "'s") + ' plan' : '';
-  return '<div class="wrap"><div class="top"><div class="who"><div class="brand">NEXTREP</div>' + (poss ? '<div class="wname">' + esc(poss) + '</div>' : '') + '</div>' +
-    '<div style="display:flex;gap:8px;align-items:center;flex:0 0 auto"><div class="streak">' + ic('flame', 16) + st.cur + ' DAY STREAK</div>' +
-    '<button class="icon-btn sm" data-act="menu" aria-label="Account menu" aria-haspopup="dialog">' + ic('user', 18) + '</button></div></div>' +
+  const nm = String(P.name || '').trim();
+  return '<div class="wrap"><div class="top"><div class="who"><div class="brand">NEXTREP</div>' + practiceLine() + '</div>' +
+    '<div style="display:flex;gap:10px;align-items:flex-start;flex:0 0 auto"><div class="streak" style="margin-top:4px">' + ic('flame', 16) + st.cur + ' DAY STREAK</div>' +
+    '<div class="acct"><button class="icon-btn sm" data-act="menu" aria-label="Account menu" aria-haspopup="dialog">' + avatar(P.photo, 36) + '</button>' + (nm ? '<span class="acname">' + esc(nm) + '</span>' : '') + '</div></div></div>' +
     body + '</div>' +
     '<nav class="tabs" aria-label="Main"><div class="in">' +
     tabBtn('today', 'Today', 'home') + tabBtn('week', 'Week', 'cal') + tabBtn('stats', 'Stats', 'chart') + '</div></nav>';
@@ -899,22 +987,23 @@ function todayView(P) {
   shown.forEach(b => {
     n++;
     const done = L[b.id] && L[b.id].done; const num = pad(n);
-    const meta = b.items.length + ' move' + (b.items.length === 1 ? '' : 's') + ' · ' + esc(b.place);
+    const mfr = movedFrom(P, ds, b.id); const mfd = mfr ? parseD(mfr) : null;
+    const meta = b.items.length + ' move' + (b.items.length === 1 ? '' : 's') + ' · ' + esc(b.place) + (mfd ? ' · moved from ' + DAYS[(mfd.getDay() + 6) % 7] + ' ' + mfd.getDate() + ' ' + MONTHS[mfd.getMonth()] : '');
     const xp = blockXp(b);
     if (done) {
       const vn = b.items.filter(i => i.video).length;
       rows += '<button class="item done" data-act="review" data-bid="' + b.id + '" aria-label="Open ' + esc(b.name) + ', completed"><div class="n">' + num + '</div><div class="t"><b>' + esc(b.name) + '</b><span>' + meta + ' · ' + (vn ? vn + ' video' + (vn === 1 ? '' : 's') : 'no videos') + '</span></div><div class="chk">' + ic('check', 15) + '</div></button>';
     } else if (!isReq(b)) {
-      rows += '<div class="item"><div class="n muted">' + num + '</div><div class="t"><b>' + esc(b.name) + '</b><span>' + meta + '</span></div>' +
-        '<button class="btn sm" data-act="tick" data-bid="' + b.id + '">Mark done</button>' + '</div>';
+      rows += '<div class="item2"><button class="item" data-act="review" data-bid="' + b.id + '" aria-label="See the moves in ' + esc(b.name) + '"><div class="n muted">' + num + '</div><div class="t"><b>' + esc(b.name) + '</b><span>' + meta + ' · tap to see moves</span></div></button>' +
+        '<button class="btn sm" data-act="tick" data-bid="' + b.id + '">Mark done</button></div>';
     } else if (!nextShown && !isFuture) {
       nextShown = true;
       rows += '</div><div class="next"><div class="item"><div class="n">' + num + '</div><div class="t"><b>' + esc(b.name) + '</b><span>' + meta + '</span></div>' +
         (b.boss ? '<span class="tag boss">POWER</span>' : '') + '<span class="xp">+' + xp + ' XP</span></div>' +
-        '<button class="btn accent big block" data-act="start" data-bid="' + b.id + '">Start ' + ic('arrow', 18) + '</button></div><div class="list" style="margin-top:0;border-top:0">';
+        '<button class="btn accent big block" data-act="start" data-bid="' + b.id + '">Start ' + ic('arrow', 18) + '</button><button class="mvlink" data-act="moveopen" data-bid="' + b.id + '">Move to another day</button></div><div class="list" style="margin-top:0;border-top:0">';
     } else {
-      rows += '<button class="item" data-act="start" data-bid="' + b.id + '"><div class="n muted">' + num + '</div><div class="t"><b>' + esc(b.name) + '</b><span>' + meta + '</span></div>' +
-        (b.boss ? '<span class="tag boss">POWER</span>' : '') + '<span class="xp">+' + xp + ' XP</span></button>';
+      rows += '<div class="item2"><button class="item" data-act="start" data-bid="' + b.id + '"><div class="n muted">' + num + '</div><div class="t"><b>' + esc(b.name) + '</b><span>' + meta + '</span></div>' +
+        (b.boss ? '<span class="tag boss">POWER</span>' : '') + '<span class="xp">+' + xp + ' XP</span></button><button class="mvbtn" data-act="moveopen" data-bid="' + b.id + '" aria-label="Move ' + esc(b.name) + ' to another day">Move</button></div>';
     }
   });
   const ap = fmtAppt(P.appointment);
@@ -924,7 +1013,7 @@ function todayView(P) {
     levelCard(P) +
     (P.note ? '<div class="coach"><span class="av">' + esc(initials) + '</span><span><b>' + esc(P.physio) + ':</b> ' + esc(P.note) + '</span></div>' : '') +
     '<div class="days" role="group" aria-label="Pick a day">' + strip + '</div>' + pchips +
-    (rows ? '<div class="list">' + rows + '</div>' : '<div class="empty">' + (info.planned ? 'Rest up. Sleep and food are part of the plan.' : 'Your physio has not set this day yet.') + '</div>') +
+    (rows ? '<div class="list">' + rows + '</div>' : '<div class="empty">' + (info.planned ? (Object.keys(P.moves || {}).some(k => P.moves[k].from === ds) ? 'Everything planned for this day was moved to another day.' : 'Rest up. Sleep and food are part of the plan.') : 'Your physio has not set this day yet.') + '</div>') +
     (isFuture ? '<p class="hint" style="margin-top:12px">Coming up. Tap any block to get it done early.</p>' : '') +
     (ap ? '<div class="card" style="margin-top:22px"><div class="eyebrow">Next physio visit</div><div class="disp" style="font-size:26px;margin-top:4px">' + esc(ap.text) + '</div><div class="muted" style="font-size:13px">' + (ap.days > 0 ? 'In ' + ap.days + ' day' + (ap.days === 1 ? '' : 's') + '. Your plan keeps going until then.' : ap.days === 0 ? 'Today.' : 'This date has passed. Ask your physio for the next one.') + '</div></div>' : '');
 }
@@ -978,7 +1067,8 @@ function statsView(P) {
 function menuView() {
   const P = PP(); const ap = fmtAppt(P.appointment);
   return '<div class="menu-back" data-act="menuback"><div class="menu-box" role="dialog" aria-modal="true" aria-label="Account">' +
-    '<div class="disp" style="font-size:26px">' + esc(P.name) + '</div>' +
+    '<div class="phrow"><span class="phav">' + avatar(P.photo, 64) + '</span><span><label class="btn sm filebtn">' + (P.photo ? 'Change photo' : 'Add photo') + '<input type="file" accept="image/*" data-file="mephoto" hidden></label>' + (P.photo ? ' <button class="btn sm" data-act="rmmephoto">Remove</button>' : '') + '</span></div>' +
+    '<div class="disp" style="font-size:26px;margin-top:12px">' + esc(P.name) + '</div>' +
     '<div class="muted" style="font-size:13.5px;margin-top:2px">' + esc(P.injury) + '</div>' +
     '<div style="margin-top:12px;font-size:13.5px"><b>Your physio:</b> ' + esc(P.physio) + '</div>' +
     (P.physioEmail ? '<div style="margin-top:4px;font-size:13.5px;overflow-wrap:anywhere"><b>Email:</b> <a href="mailto:' + esc(P.physioEmail) + '" style="color:inherit">' + esc(P.physioEmail) + '</a></div>' : '') +
@@ -1014,6 +1104,32 @@ function remindView() {
     '<div class="actions" style="margin-top:0"><button class="btn accent big block" data-act="remindok">Got it</button></div></div></div>';
 }
 
+/* ===== move a block to another day ===== */
+function moveView() {
+  const P = PP(); const m = S.moveSel; const b = blocksById(P)[m.bid]; if (!b) return '';
+  let opts = '';
+  for (let i = 0; i < 14; i++) {
+    const d = addDays(new Date(), i), s = dstr(d); if (s === m.ds) continue;
+    const ids = planDay(P, s); const has = !!ids && ids.indexOf(m.bid) >= 0; const inf = dayInfo(P, s);
+    const sub = has ? 'Already has this block' : inf.planned ? (inf.req.length ? inf.req.length + ' block' + (inf.req.length === 1 ? '' : 's') + ' planned' : 'Rest day') : 'Nothing planned yet';
+    opts += '<button class="mvopt"' + (has ? ' disabled' : ' data-act="moveto" data-to="' + s + '"') + '><b>' + DAYS_LONG[(d.getDay() + 6) % 7] + ' ' + d.getDate() + ' ' + MONTHS[d.getMonth()] + (i === 0 ? ' (today)' : i === 1 ? ' (tomorrow)' : '') + '</b><span>' + sub + '</span></button>';
+  }
+  return '<div class="leave-back" data-act="moveback"><div class="leave-box" role="dialog" aria-modal="true" aria-labelledby="mvT">' +
+    '<b id="mvT" class="disp" style="font-size:26px;display:block">Move ' + esc(b.name) + '</b>' +
+    '<div class="muted" style="font-size:14px;margin:6px 0 12px">Pick the day you will do it instead. Only this block moves.</div>' +
+    '<div class="mvopts">' + opts + '</div>' +
+    '<div class="actions"><button class="btn" data-act="moveclose">Cancel</button></div></div></div>';
+}
+async function applyMove(ds, bid, to) {
+  const mv = Object.assign({}, (S.logDoc && S.logDoc.moves) || {});
+  const k = Object.keys(mv).find(x => mv[x].bid === bid && mv[x].to === ds);
+  if (k) { const from = mv[k].from; delete mv[k]; if (to !== from) mv[from + '_' + bid] = { from: from, bid: bid, to: to, at: Date.now() }; }
+  else mv[ds + '_' + bid] = { from: ds, bid: bid, to: to, at: Date.now() };
+  S.logDoc = Object.assign({}, S.logDoc, { id: S.code, log: (S.logDoc && S.logDoc.log) || {}, moves: mv });
+  S.moveSel = null; render();
+  try { await Store.setDoc('logs', S.code, S.logDoc); } catch (e) { reportErr(e); }
+}
+
 /* ===== review a finished block ===== */
 function reviewView() {
   const P = PP(); const r = S.review; const b = blocksById(P)[r.bid];
@@ -1032,9 +1148,9 @@ function reviewView() {
   const rec = b.type === 'recovery';
   return '<div class="sheet" role="dialog" aria-modal="true" aria-label="' + esc(b.name) + '"><div class="wrap">' +
     '<div class="shead"><button class="icon-btn" data-act="reviewclose" aria-label="Close">' + ic('x', 18) + '</button><div class="t"><div class="eyebrow">' + DAYS_LONG[(d.getDay() + 6) % 7] + ' ' + d.getDate() + ' ' + MONTHS[d.getMonth()] + '</div><div class="disp" style="font-size:20px">' + esc(b.name) + '</div></div>' + (b.boss ? '<span class="tag boss">POWER</span>' : '') + '</div>' +
-    '<div class="cue" style="margin-top:18px"><b>Completed ' + esc(fmtDone(e.at, r.ds)) + '.</b> ' + (e.xp ? '+' + e.xp + ' XP earned.' : 'Marked as done.') + '</div>' +
+    (e.done ? '<div class="cue" style="margin-top:18px"><b>Completed ' + esc(fmtDone(e.at, r.ds)) + '.</b> ' + (e.xp ? '+' + e.xp + ' XP earned.' : 'Marked as done.') + '</div>' : '<div class="cue" style="margin-top:18px"><b>Not done yet.</b> ' + (rec ? 'Do these moves, then mark it done.' : '') + '</div>') +
     '<div class="rvs">' + rows + '</div>' +
-    '<div class="actions">' + (rec ? '<button class="btn" data-act="untick" data-ds="' + r.ds + '" data-bid="' + b.id + '">Mark as not done</button>' : '<button class="btn" data-act="reviewclose">Close</button><button class="btn accent" data-act="redo" data-ds="' + r.ds + '" data-bid="' + b.id + '">Do it again</button>') + '</div>' +
+    '<div class="actions">' + (rec && !e.done ? '<button class="btn" data-act="reviewclose">Close</button><button class="btn accent" data-act="tick" data-bid="' + b.id + '">Mark done</button>' : rec ? '<button class="btn" data-act="untick" data-ds="' + r.ds + '" data-bid="' + b.id + '">Mark as not done</button>' : '<button class="btn" data-act="reviewclose">Close</button><button class="btn accent" data-act="redo" data-ds="' + r.ds + '" data-bid="' + b.id + '">Do it again</button>') + '</div>' +
     (rec ? '' : '<p class="hint" style="margin-top:10px">Doing it again replaces these results when you finish. XP is only counted once.</p>') + '</div></div>';
 }
 
@@ -1128,30 +1244,77 @@ function celeView() {
 }
 
 /* ===== physio ===== */
-function physioView() {
-  const top = '<div class="top"><div class="brand">NEXTREP<small>PHYSIO</small></div><button class="btn sm" data-act="signout">Sign out</button></div>';
-  if (S.sel && S.plans[S.sel]) return '<div class="wrap wide">' + top + physioDetail() + '</div>';
-  const ids = Object.keys(S.plans).sort((a, b) => S.plans[a].name.localeCompare(S.plans[b].name));
-  const cards = ids.map(id => {
+function patientCards(ids) {
+  return ids.map(id => {
     const P = PP(id); const t = todayStr(); const st = streakStats(P, t); const lv = levelInfo(xpTotal(P));
     const flags = painFlags(P).filter(f => !f.reviewed).length; const la = lastActive(P);
     const idle = la && (Date.now() - la) > 3 * 86400000;
     const info = dayInfo(P, t);
     let flag = '';
-    if (flags) flag = '<span class="flag">' + flags + ' pain flag' + (flags > 1 ? 's' : '') + '</span>';
+    if (P.archived) flag = '<span class="flag nudge">Archived</span>';
+    else if (flags) flag = '<span class="flag">' + flags + ' pain flag' + (flags > 1 ? 's' : '') + '</span>';
     else if (idle) flag = '<span class="flag nudge">Nudge</span>';
     else flag = '<span class="flag ok">On track</span>';
     return '<button class="pcard" data-act="openpatient" data-id="' + id + '"><div class="top2"><div><h3>' + esc(P.name) + (P.age ? ' · ' + esc(P.age) : '') + '</h3><div class="muted" style="font-size:13px">' + esc(P.injury) + '</div></div>' + flag + '</div>' +
       '<div class="muted" style="font-size:13px">Week ' + programWeek(P, t) + ' · ' + st.cur + ' day streak · Level ' + lv.L + '</div>' +
-      '<div class="muted" style="font-size:13px">' + ago(la) + (info.planned && info.req.length ? ' · Today ' + info.done + ' of ' + info.req.length + ' done' : '') + '</div>' +
+      '<div class="muted" style="font-size:13px">' + ago(la) + (!P.archived && info.planned && info.req.length ? ' · Today ' + info.done + ' of ' + info.req.length + ' done' : '') + (P.archived && P.archivedAt ? ' · archived ' + new Date(P.archivedAt).getDate() + ' ' + MONTHS[new Date(P.archivedAt).getMonth()] : '') + '</div>' +
       (P.sample ? '<div><span class="tag">SAMPLE</span></div>' : '') + '</button>';
   }).join('');
+}
+function dashView(ids) {
+  const t = todayStr(); const off = Math.min(0, S.dashOff || 0);
+  const end = addDays(new Date(), off * 14);
+  const days = []; for (let i = 13; i >= 0; i--) days.push(addDays(end, -i));
+  const rows = ids.map(id => {
+    const P = PP(id); let missed = 0, done = 0, planned = 0, moved = 0; const fl = painFlags(P);
+    const cells = days.map(d => {
+      const s = dstr(d), inf = dayInfo(P, s); const pain = fl.some(f => f.ds === s);
+      let c = 'rest', g = '', lbl = 'rest day or nothing planned';
+      if (s > t) { c = 'fut'; lbl = 'coming up'; }
+      else if (inf.planned && inf.req.length) {
+        planned += inf.req.length; done += inf.done;
+        if (inf.complete) { c = 'full'; g = ic('check', 14); lbl = 'all ' + inf.req.length + ' blocks done'; }
+        else if (inf.done > 0) { c = 'part'; g = inf.done + '/' + inf.req.length; lbl = inf.done + ' of ' + inf.req.length + ' blocks done'; }
+        else if (s === t) { c = 'today'; lbl = 'today, nothing done yet'; }
+        else { c = 'miss'; g = ic('x', 12); lbl = 'missed ' + inf.req.length + ' block' + (inf.req.length === 1 ? '' : 's'); }
+        if (s < t) missed += inf.req.length - inf.done;
+      }
+      if (inf.planned && Object.keys(P.moves || {}).some(k => P.moves[k].to === s || P.moves[k].from === s)) moved++;
+      const al = esc(P.name) + ', ' + DAYS[(d.getDay() + 6) % 7] + ' ' + d.getDate() + ' ' + MONTHS[d.getMonth()] + ': ' + lbl + (pain ? ', pain flagged' : '');
+      if (pain) return '<button class="dd ' + c + (s === t ? ' tdy' : '') + ' hasp" data-act="daydetail" data-id="' + id + '" data-ds="' + s + '" aria-label="' + al + '. Open details">' + g + '<i class="pn">!</i></button>';
+      return '<div class="dd ' + c + (s === t ? ' tdy' : '') + '" role="img" aria-label="' + al + '">' + g + '</div>';
+    }).join('');
+    return { id: id, P: P, missed: missed, done: done, planned: planned, moved: moved, cells: cells };
+  }).sort((x, y) => y.missed - x.missed || x.P.name.localeCompare(y.P.name));
+  const totalMissed = rows.reduce((n, r) => n + r.missed, 0);
+  const head = '<div class="dh corner">Patient</div>' + days.map(d => '<div class="dh' + (dstr(d) === t ? ' tdy' : '') + '">' + ['M', 'T', 'W', 'T', 'F', 'S', 'S'][(d.getDay() + 6) % 7] + '<b>' + d.getDate() + '</b></div>').join('') + '<div class="dh">Total</div>';
+  const body = rows.map(r => '<button class="dn" data-act="openpatient" data-id="' + r.id + '" data-t="activity">' + esc(r.P.name) + '</button>' + r.cells +
+    '<div class="dtot' + (r.missed ? ' bad' : '') + '">' + (r.planned ? (r.missed ? r.missed + ' missed' : 'None missed') : 'No blocks') + '<small>' + (r.planned ? r.done + ' of ' + r.planned + ' done' : '') + (r.moved ? (r.planned ? ' · ' : '') + 'moved days' : '') + '</small></div>').join('');
+  const a = days[0], z = days[13];
+  const range = a.getDate() + ' ' + MONTHS[a.getMonth()] + ' to ' + z.getDate() + ' ' + MONTHS[z.getMonth()];
+  return '<div class="wknav"><div><div class="disp" style="font-size:26px">Missed vs done</div><div class="muted" style="font-size:13px">' + range + ' · ' + (totalMissed ? totalMissed + ' block' + (totalMissed === 1 ? '' : 's') + ' missed across all patients' : 'Nothing missed') + '</div></div>' +
+    '<div style="display:flex;gap:8px"><button class="btn sm" data-act="dashmove" data-d="-1">' + ic('back', 16) + ' Earlier</button><button class="btn sm" data-act="dashmove" data-d="1"' + (off >= 0 ? ' disabled' : '') + '>Later</button></div></div>' +
+    '<div class="legend dlegend"><span><i class="sw full"></i>All done</span><span><i class="sw part"></i>Some done</span><span><i class="sw miss"></i>Missed</span><span><i class="sw none"></i>Rest day</span><span><i class="sw pain"></i>Pain flagged</span><span><i class="sw today"></i>Today</span></div>' +
+    (rows.length ? '<div class="dashwrap"><div class="dash">' + head + body + '</div></div>' : '<div class="empty">No active patients yet.</div>');
+}
+function physioView() {
+  const top = '<div class="top"><div class="who"><div class="brand">NEXTREP<small>PHYSIO</small></div>' + practiceLine() + '</div><div style="display:flex;gap:8px"><button class="btn sm" data-act="practice">Practice</button><button class="btn sm" data-act="signout">Sign out</button></div></div>';
+  if (S.sel && S.plans[S.sel]) return '<div class="wrap wide">' + top + physioDetail() + '</div>';
+  const all = Object.keys(S.plans).sort((a, b) => S.plans[a].name.localeCompare(S.plans[b].name));
+  const ids = all.filter(id => !S.plans[id].archived), arch = all.filter(id => S.plans[id].archived);
+  const view = S.pview === 'dashboard' ? 'dashboard' : (S.pview === 'archived' ? 'archived' : 'patients');
   const need = ids.filter(id => painFlags(PP(id)).some(f => !f.reviewed)).length;
+  const segs = [['patients', 'Patients (' + ids.length + ')'], ['dashboard', 'Dashboard'], ['archived', 'Archived (' + arch.length + ')']];
+  const seg = '<div class="seg" role="group" aria-label="View">' + segs.map(x => '<button data-act="pview" data-v="' + x[0] + '" aria-pressed="' + (view === x[0]) + '">' + x[1] + '</button>').join('') + '</div>';
+  let body = '';
+  if (view === 'dashboard') body = dashView(ids);
+  else if (view === 'archived') body = arch.length ? '<p class="muted" style="margin:14px 0 0;font-size:14px">Archived patients cannot sign in. Open one to restore them.</p><div class="grid2">' + patientCards(arch) + '</div>' : '<div class="empty">No archived patients. Archive a patient from their Profile tab when they finish.</div>';
+  else body = '<div class="actions"><button class="btn accent" data-act="newpatient">' + ic('plus', 18) + ' New patient</button></div>' +
+    (ids.length ? '<div class="grid2">' + patientCards(ids) + '</div>' : '<div class="empty">Add your first patient. Pick the ACL rebuild template to start with a full week already built.</div>');
   return '<div class="wrap wide">' + top +
     '<div class="hero"><div class="eyebrow">Your patients</div><h1>' + (ids.length ? ids.length + ' patient' + (ids.length === 1 ? '' : 's') + '.<br><mark>' + (need ? need + ' need' + (need === 1 ? 's' : '') + ' a look.' : 'All good.') + '</mark>' : 'No patients<br><mark>yet.</mark>') + '</h1></div>' +
     '<div class="proto" style="margin-top:16px"><b>Prototype.</b> The physio view has no password yet. Each patient only sees their own plan, through their own code.</div>' +
-    '<div class="actions"><button class="btn accent" data-act="newpatient">' + ic('plus', 18) + ' New patient</button></div>' +
-    (ids.length ? '<div class="grid2">' + cards + '</div>' : '<div class="empty">Add your first patient. Pick the ACL rebuild template to start with a full week already built.</div>') + '</div>';
+    seg + body + '</div>';
 }
 function physioDetail() {
   const P = PP(); const t = todayStr();
@@ -1163,6 +1326,7 @@ function physioDetail() {
   else body = profileTab(P);
   return '<div class="hero" style="padding-top:14px"><button class="btn sm" data-act="back">' + ic('back', 16) + ' All patients</button>' +
     '<h1 style="margin-top:14px">' + esc(P.name) + '</h1><div class="muted">' + esc(P.injury) + ' · Week ' + programWeek(P, t) + '</div></div>' +
+    (P.archived ? '<div class="card" style="margin-top:14px;border-color:var(--ink)"><b>Archived</b><div class="muted" style="font-size:13.5px;margin:4px 0 10px">This patient is out of your main list and their code does not work. Their plan and history are kept.</div><button class="btn accent sm" data-act="restore">Restore patient</button></div>' : '') +
     '<div class="invite"><div><div class="s">PATIENT CODE</div><div class="c" aria-label="Patient code">' + esc(P.code) + '</div><div class="s">They open NextRep and type this in. It only opens their own plan.</div></div>' +
     '<button class="btn accent" data-act="copycode">Copy code</button></div>' +
     '<div class="seg" role="group" aria-label="Sections">' + tabs.map(x => '<button data-act="ptab" data-t="' + x[0] + '" aria-pressed="' + (S.ptab === x[0]) + '">' + x[1] + '</button>').join('') + '</div>' + body;
@@ -1209,11 +1373,11 @@ function blocksTab(P) {
 function profileTab(P) {
   if (!S.draft || S.draft.__for !== P.id) S.draft = { __for: P.id, name: P.name, age: P.age, injury: P.injury, goal: P.goal, physio: P.physio, physioEmail: P.physioEmail || '', note: P.note, appointment: P.appointment || '', started: P.started };
   const D = S.draft; const f = (k, label, type) => '<div class="field"><label for="pf_' + k + '">' + label + '</label><input id="pf_' + k + '" class="input" type="' + (type || 'text') + '" data-f="' + k + '" value="' + esc(D[k]) + '"></div>';
-  return '<div class="h2" style="margin-top:20px">Profile</div><div class="fgrid">' + f('name', 'Name') + f('age', 'Age') + f('physio', 'Physio name') + f('physioEmail', 'Physio email', 'email') + '</div>' +
+  return '<div class="h2" style="margin-top:20px">Profile</div><div class="phrow" style="margin-bottom:14px"><span class="phav">' + avatar(P.photo, 64) + '</span><span><label class="btn sm filebtn">' + (P.photo ? 'Change photo' : 'Add photo') + '<input type="file" accept="image/*" data-file="pphoto" hidden></label>' + (P.photo ? ' <button class="btn sm" data-act="rmpphoto">Remove</button>' : '') + '</span></div><div class="fgrid">' + f('name', 'Name') + f('age', 'Age') + f('physio', 'Physio name') + f('physioEmail', 'Physio email', 'email') + '</div>' +
     '<div class="fgrid" style="margin-top:12px">' + f('injury', 'Injury') + f('goal', 'Goal') + '</div>' +
     '<div class="field" style="margin-top:12px"><label for="pf_note">Note shown on their home screen</label><textarea id="pf_note" class="input" data-f="note">' + esc(D.note) + '</textarea></div>' +
     '<div class="fgrid" style="margin-top:12px">' + f('appointment', 'Next appointment', 'datetime-local') + f('started', 'Program start (Monday)', 'date') + '</div>' +
-    '<div class="actions"><button class="btn accent" data-act="saveprofile">Save profile</button><button class="btn danger" data-act="delpatient">Delete patient</button></div>';
+    '<div class="actions"><button class="btn accent" data-act="saveprofile">Save profile</button>' + (P.archived ? '<button class="btn" data-act="restore">Restore patient</button>' : '<button class="btn" data-act="archive">Archive patient</button>') + '<button class="btn danger" data-act="delpatient">Delete patient</button></div>';
 }
 
 /* ===== modals (physio) ===== */
@@ -1223,10 +1387,39 @@ function renderModal() {
   let inner = '';
   if (M.type === 'newpatient') inner = newPatientModal();
   else if (M.type === 'invite') inner = inviteModal();
+  else if (M.type === 'practice') inner = practiceModal();
+  else if (M.type === 'day') inner = dayModal();
   else if (M.type === 'pick') inner = pickModal();
   else if (M.type === 'block') inner = blockModal();
   else if (M.type === 'confirm') inner = '<h2>' + esc(M.title) + '</h2><p class="muted">' + esc(M.body) + '</p><div class="actions"><button class="btn" data-act="mclose">Cancel</button><button class="btn ' + (M.danger ? 'danger' : 'accent') + '" data-act="myes">' + esc(M.yes || 'Confirm') + '</button></div>';
   m.innerHTML = '<div class="mback" data-act="mback"><div class="panel" role="dialog" aria-modal="true">' + inner + '</div></div>';
+}
+function dayModal() {
+  const M = S.modal; const P = PP(M.id); if (!P) return '';
+  const d = parseD(M.ds), inf = dayInfo(P, M.ds); const L = (P.log || {})[M.ds] || {}; const feelL = { easy: 'Easy', ok: 'Just right', tough: 'Tough', pain: 'Pain' };
+  const flags = painFlags(P).filter(f => f.ds === M.ds);
+  const blocks = inf.blocks.map(b => {
+    const e = L[b.id] || {}, its = e.items || {};
+    const rows = b.items.map(it => {
+      const x = its[it.id]; let res = 'Not logged';
+      if (it.unit === 'check') res = x || e.done ? 'Ticked off' : 'Not logged';
+      else if (x && x.sets && x.sets.length) res = x.sets.map(s => it.unit === 'sec' ? s.r + 's' : (it.weighted && s.kg ? s.r + ' × ' + s.kg + 'kg' : String(s.r))).join(', ');
+      const fl = x && x.feel && it.unit !== 'check' ? ' <span class="tag' + (x.pain ? ' boss' : '') + '">' + feelL[x.feel] + '</span>' : '';
+      return '<div class="rowx" style="padding:8px 0"><div class="l"><b style="font-size:14px">' + esc(it.name) + '</b>' + fl + '<div class="muted" style="font-size:13px">' + esc(targetLabel(it)) + ' · <span style="color:var(--ink)">' + esc(res) + '</span></div></div></div>';
+    }).join('');
+    return '<div style="margin-top:14px"><div class="rowx" style="border:0;padding:0"><b>' + esc(b.name) + '</b><span class="tag">' + (e.done ? 'Done' : 'Not done') + '</span></div>' + (e.done ? '<div class="muted" style="font-size:12.5px">Completed ' + esc(fmtDone(e.at, M.ds)) + '</div>' : '') + rows + '</div>';
+  }).join('');
+  return '<h2>' + esc(P.name) + ' · ' + DAYS_LONG[(d.getDay() + 6) % 7] + ' ' + d.getDate() + ' ' + MONTHS[d.getMonth()] + '</h2>' +
+    (flags.length ? '<div class="flag" style="display:block">Pain flagged: ' + flags.map(f => esc(f.move) + ' (' + esc(f.block) + ')').join('; ') + (flags.every(f => f.reviewed) ? ' · reviewed' : '') + '</div>' : '') +
+    (blocks || '<p class="muted">Nothing planned for this day.</p>') +
+    '<div class="actions"><button class="btn" data-act="mclose">Close</button>' + (flags.some(f => !f.reviewed) ? '<button class="btn" data-act="dayreviewed" data-id="' + M.id + '">Mark as reviewed</button>' : '') + '<button class="btn accent" data-act="openpatient" data-id="' + M.id + '" data-t="activity">Open activity</button></div>';
+}
+function practiceModal() {
+  const D = S.draft;
+  return '<h2>Your practice</h2><p class="muted" style="margin-top:0">Shown under the NextRep logo for you and all your patients.</p>' +
+    '<div class="field"><label for="pr_name">Practice name</label><input id="pr_name" class="input" data-f="name" value="' + esc(D.name) + '" placeholder="Dr Fit Physiotherapy"></div>' +
+    '<div class="phrow" style="margin-top:12px"><span class="phav sq">' + (D.logo ? '<img class="avimg" src="' + esc(D.logo) + '" alt="">' : '<span class="muted" style="font-size:11px">No logo</span>') + '</span><span><label class="btn sm filebtn">' + (D.logo ? 'Change logo' : 'Add logo') + '<input type="file" accept="image/*" data-file="logo" hidden></label>' + (D.logo ? ' <button class="btn sm" data-act="rmlogo">Remove</button>' : '') + '</span></div>' +
+    '<div class="actions"><button class="btn" data-act="mclose">Cancel</button><button class="btn accent" data-act="savepractice">Save</button></div>';
 }
 function newPatientModal() {
   const D = S.draft;
@@ -1306,6 +1499,19 @@ document.addEventListener('input', e => {
   if (t.dataset.rerender) renderModal();
 });
 document.addEventListener('change', e => {
+  const t0 = e.target; if (t0 && t0.dataset && t0.dataset.file) {
+    const kind = t0.dataset.file, file = t0.files && t0.files[0]; t0.value = '';
+    if (kind === 'logo') readImage(file, 320, true, u => { if (S.draft) { S.draft.logo = u; renderModal(); } });
+    else if (kind === 'mephoto') readImage(file, 192, false, async u => {
+      S.logDoc = Object.assign({}, S.logDoc, { id: S.code, log: (S.logDoc && S.logDoc.log) || {}, photo: u }); render(); renderOverlay();
+      try { await Store.setDoc('logs', S.code, S.logDoc); } catch (x) { reportErr(x); }
+    });
+    else if (kind === 'pphoto') readImage(file, 192, false, async u => {
+      const id = S.sel; const ld = Object.assign({ id: id, log: {} }, S.logs[id] || {}, { photo: u });
+      try { await Store.setDoc('logs', id, ld); showToast('Photo saved'); } catch (x) { reportErr(x); }
+    });
+    return;
+  }
   const t = e.target; if (!t.dataset || !t.dataset.f) return;
   if (t.dataset.rerender && S.draft) { setPath(S.draft, t.dataset.f, t.value); renderModal(); }
 });
@@ -1332,6 +1538,10 @@ document.addEventListener('click', async e => {
       break;
     }
     case 'place': S.place = d.p || ''; render(); break;
+    case 'moveopen': S.moveSel = { ds: S.date || todayStr(), bid: d.bid }; renderOverlay(); break;
+    case 'moveclose': S.moveSel = null; renderOverlay(); break;
+    case 'moveback': if (e.target === el) { S.moveSel = null; renderOverlay(); } break;
+    case 'moveto': { const m = S.moveSel; if (m) { await applyMove(m.ds, m.bid, d.to); const t = parseD(d.to); showToast('Moved to ' + DAYS[(t.getDay() + 6) % 7] + ' ' + t.getDate() + ' ' + MONTHS[t.getMonth()] + '.'); } break; }
     case 'review': S.review = { ds: S.date || todayStr(), bid: d.bid }; renderOverlay(); break;
     case 'reviewclose': S.review = null; renderOverlay(); break;
     case 'redo': S.review = null; startSession(d.ds, d.bid); break;
@@ -1345,11 +1555,29 @@ document.addEventListener('click', async e => {
     case 'tick': {
       const ds = S.date || todayStr(); const log = clone((S.logDoc && S.logDoc.log) || {}); log[ds] = log[ds] || {};
       log[ds][d.bid] = { done: true, at: Date.now(), xp: 0, boss: false, items: {} };
-      S.logDoc = Object.assign({}, S.logDoc, { id: S.code, log: log }); render(); showToast('Recovery logged.');
+      S.logDoc = Object.assign({}, S.logDoc, { id: S.code, log: log }); S.review = null; render(); showToast('Recovery logged.');
       try { await Store.setDoc('logs', S.code, S.logDoc); } catch (x) { reportErr(x); } break;
     }
     case 'closesession': S.session.leave = true; renderOverlay(); break;
     case 'menu': S.menu = true; renderOverlay(); break;
+    case 'rmmephoto': {
+      S.logDoc = Object.assign({}, S.logDoc, { id: S.code, log: (S.logDoc && S.logDoc.log) || {}, photo: '' });
+      if (S.plan && S.plan.photo) { /* physio-set photo stays as fallback */ }
+      render(); renderOverlay(); try { await Store.setDoc('logs', S.code, S.logDoc); } catch (x) { reportErr(x); } break;
+    }
+    case 'rmpphoto': {
+      const id = S.sel; const ld = Object.assign({ id: id, log: {} }, S.logs[id] || {}, { photo: '' });
+      try { await Store.setDoc('logs', id, ld); if (S.plans[id] && S.plans[id].photo) editPlan(p => { p.photo = ''; }); } catch (x) { reportErr(x); } break;
+    }
+    case 'daydetail': S.modal = { type: 'day', id: d.id, ds: d.ds }; renderModal(); break;
+    case 'dayreviewed': { const p = clone(S.plans[d.id]); p.painReviewedAt = Date.now(); await savePlan(p); renderModal(); showToast('Marked as reviewed'); break; }
+    case 'practice': S.draft = { __for: 'practice', name: (S.practice && S.practice.name) || '', logo: (S.practice && S.practice.logo) || '' }; S.modal = { type: 'practice' }; renderModal(); break;
+    case 'rmlogo': if (S.draft) { S.draft.logo = ''; renderModal(); } break;
+    case 'savepractice': {
+      const D = S.draft; const doc = { name: String(D.name || '').trim(), logo: D.logo || '' };
+      try { await Store.setDoc('meta', 'practice', doc); S.practice = doc; } catch (x) { reportErr(x); }
+      S.modal = null; S.draft = null; renderModal(); render(); showToast('Practice saved'); break;
+    }
     case 'menuclose': S.menu = false; renderOverlay(); break;
     case 'menuback': if (e.target === el) { S.menu = false; renderOverlay(); } break;
     case 'keepgoing': S.session.leave = false; renderOverlay(); break;
@@ -1379,7 +1607,9 @@ document.addEventListener('click', async e => {
     case 'celeclose': S.cele = null; render(); window.scrollTo(0, 0); break;
 
     /* physio */
-    case 'openpatient': S.sel = d.id; S.ptab = 'plan'; S.pweek = ''; S.draft = null; render(); window.scrollTo(0, 0); break;
+    case 'openpatient': S.modal = null; renderModal(); S.sel = d.id; S.ptab = d.t || 'plan'; S.pweek = ''; S.draft = null; render(); window.scrollTo(0, 0); break;
+    case 'pview': S.pview = d.v; render(); break;
+    case 'dashmove': S.dashOff = Math.min(0, (S.dashOff || 0) + Number(d.d)); render(); break;
     case 'back': S.sel = null; S.draft = null; render(); break;
     case 'ptab': S.ptab = d.t; S.draft = null; render(); break;
     case 'copycode': copyText(P ? P.code : S.plans[S.modal && S.modal.id].code, 'Code'); break;
@@ -1441,6 +1671,12 @@ document.addEventListener('click', async e => {
       editPlan(p => { ['name', 'age', 'injury', 'goal', 'physio', 'physioEmail', 'note', 'appointment', 'started'].forEach(k => { p[k] = D[k]; }); if (!p.started) p.started = dstr(mondayOf(new Date())); });
       S.draft = null; showToast('Profile saved'); break;
     }
+    case 'archive': {
+      S.modal = { type: 'confirm', title: 'Archive ' + P.name + '?', body: 'They move out of your main list and their code stops working. Their plan and history are kept. Find them under Archived and restore them any time.', yes: 'Archive patient',
+        fn: () => { editPlan(p => { p.archived = true; p.archivedAt = Date.now(); }); S.sel = null; S.draft = null; S.pview = 'patients'; render(); showToast('Archived. Find them under Archived.'); } };
+      renderModal(); break;
+    }
+    case 'restore': { editPlan(p => { p.archived = false; delete p.archivedAt; }); S.draft = null; render(); showToast('Restored. They can sign in again.'); break; }
     case 'delpatient': {
       const id = S.sel;
       S.modal = { type: 'confirm', title: 'Delete ' + P.name + '?', body: 'Their plan and all their activity are removed for good, and their code stops working.', yes: 'Delete patient', danger: true,
