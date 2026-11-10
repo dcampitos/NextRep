@@ -1096,8 +1096,9 @@ function render() {
   if (S.role === 'patient' && !S.remChecked && S.plan && S.logDoc) { S.remChecked = true; S.remind = dueReminder(PP()); }
   renderOverlay(); renderModal();
 }
-function renderOverlay() {
+function renderOverlay(resetScroll) {
   const o = $('#overlay');
+  const oldSheet = o.querySelector('.sheet'); const keepTop = oldSheet ? oldSheet.scrollTop : 0;
   if (S.cele) o.innerHTML = celeView();
   else if (S.remind) o.innerHTML = remindView();
   else if (S.moveSel) o.innerHTML = moveView();
@@ -1105,6 +1106,7 @@ function renderOverlay() {
   else if (S.review) o.innerHTML = reviewView();
   else if (S.menu && S.role === 'patient' && PP()) o.innerHTML = menuView();
   else o.innerHTML = '';
+  const newSheet = o.querySelector('.sheet'); if (oldSheet && newSheet && !resetScroll) newSheet.scrollTop = keepTop;
   const mc = $('#mchips'); if (mc) { const cu = mc.querySelector('.cur'); if (cu) mc.scrollLeft = cu.offsetLeft - mc.clientWidth / 2 + cu.offsetWidth / 2; }
 }
 
@@ -1828,7 +1830,7 @@ document.addEventListener('click', async e => {
       if (Object.keys(s.data).length >= items.length) { finishBlock(); break; }
       let nx = -1;
       for (let k = 1; k <= items.length; k++) { const j = (s.idx + k) % items.length; if (!s.data[items[j].id]) { nx = j; break; } }
-      s.idx = nx; initMove(); renderOverlay(); window.scrollTo(0, 0); savePartial();
+      s.idx = nx; initMove(); renderOverlay(true); window.scrollTo(0, 0); savePartial();
       break;
     }
     case 'undomove': {
@@ -1836,7 +1838,7 @@ document.addEventListener('click', async e => {
     }
     case 'painflag': { const s = S.session; s.feel = s.feel === 'pain' ? 'ok' : 'pain'; renderOverlay(); break; }
     case 'gomove': {
-      const s = S.session; stashMove(); s.idx = Number(d.i); initMove(); renderOverlay(); window.scrollTo(0, 0); break;
+      const s = S.session; stashMove(); s.idx = Number(d.i); initMove(); renderOverlay(true); window.scrollTo(0, 0); break;
     }
     case 'celeclose': S.cele = null; render(); window.scrollTo(0, 0); break;
 
