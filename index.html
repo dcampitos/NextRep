@@ -1284,7 +1284,7 @@ function menuView() {
     '<div style="margin-top:12px;font-size:13.5px"><b>Your physio:</b> ' + esc(P.physio) + '</div>' +
     (P.physioEmail ? '<div style="margin-top:4px;font-size:13.5px;overflow-wrap:anywhere"><b>Email:</b> <a href="mailto:' + esc(P.physioEmail) + '" style="color:inherit">' + esc(P.physioEmail) + '</a></div>' : '') +
     (ap ? '<div style="margin-top:4px;font-size:13.5px"><b>Next visit:</b> ' + esc(ap.text) + '</div>' : '') +
-    '<div class="actions"><button class="btn sm" data-act="menuclose">Close</button><button class="btn sm danger" data-act="signout">Sign out</button></div></div></div>';
+    '<div class="actions"><button class="btn sm" data-act="menuclose">Close</button><button class="btn sm danger" data-act="signout">Sign out</button></div><div class="muted" style="font-size:11px;margin-top:14px">Build 10 Nov, scroll fix</div></div></div>';
 }
 
 /* ===== appointment reminders (48 h and 24 h, shown once at login) ===== */
