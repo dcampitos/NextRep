@@ -545,6 +545,12 @@ select.input option{background:#151B38;color:var(--ink)}
 .phav.sq{width:64px;border-radius:50%}
 .phav.sq .avimg{border-radius:50%;object-fit:cover}
 
+.wwin{margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+.wwin .wl{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.bar.sm{height:7px;margin-top:8px}
+.level.wonly .wwin{margin-top:0;padding-top:0;border-top:0}
+.level.wonly .wl{font-size:13px}
+
 </style>
 </head><body><div id="app"></div>
 <div id="modal"></div>
@@ -835,6 +841,27 @@ function progressInfo(P) {
   let total = 0, done = 0;
   Object.keys(days).forEach(ds => { const inf = dayInfo(P, ds); const LL = L[ds] || {}; total += inf.req.length; inf.req.forEach(b => { if (LL[b.id] && LL[b.id].done) done++; }); });
   return { done: done, total: total, pct: total ? Math.round(done / total * 100) : 0 };
+}
+
+/* Target window for the program percentage: this week (Mon to Sun) or until the next appointment. */
+function windowInfo(P, todayS) {
+  const today = parseD(todayS);
+  let mode = 'week', start = mondayOf(today), end = addDays(start, 6);
+  if (P.goalmode === 'appt' && P.appointment) {
+    const ad = new Date(P.appointment);
+    if (!isNaN(ad)) {
+      const ae = new Date(ad.getFullYear(), ad.getMonth(), ad.getDate());
+      if (ae >= today) { mode = 'appt'; end = ae; start = (P.goalFrom && parseD(P.goalFrom) <= today) ? parseD(P.goalFrom) : today; if (start > end) start = today; }
+    }
+  }
+  const L = P.log || {}; let total = 0, done = 0;
+  for (let d = new Date(start); d <= end; d = addDays(d, 1)) {
+    const ds = dstr(d); const inf = dayInfo(P, ds); const LL = L[ds] || {};
+    total += inf.req.length; inf.req.forEach(b => { if (LL[b.id] && LL[b.id].done) done++; });
+  }
+  const daysLeft = end >= today ? Math.round((end - today) / 86400000) + 1 : 0;
+  const left = Math.max(0, total - done);
+  return { mode: mode, startS: dstr(start), endS: dstr(end), total: total, done: done, left: left, daysLeft: daysLeft, pct: total ? Math.round(done / total * 100) : 0, perDay: daysLeft ? Math.ceil(left / daysLeft * 10) / 10 : 0 };
 }
 function streakStats(P, todayStr) {
   let cur = 0, best = 0, run = 0;
@@ -1148,11 +1175,27 @@ function tabBtn(id, label, icon) {
 function programWeek(P, ds) {
   return Math.max(1, Math.floor(Math.round((mondayOf(parseD(ds)) - parseD(P.started)) / 864e5) / 7) + 1);
 }
+function shortD(ds) { const d = parseD(ds); return DAYS[(d.getDay() + 6) % 7] + ' ' + d.getDate() + ' ' + MONTHS[d.getMonth()]; }
+function windowBlock(P) {
+  const w = windowInfo(P, todayStr());
+  const label = w.mode === 'appt' ? 'To appointment' : 'This week';
+  const sm = parseD(w.startS).getMonth() === parseD(w.endS).getMonth(); const range = (sm ? shortD(w.startS).split(' ').slice(0, 2).join(' ') : shortD(w.startS)) + ' to ' + shortD(w.endS);
+  let line;
+  if (!w.total) line = 'No blocks scheduled in this window yet.';
+  else if (!w.left) line = 'All ' + w.total + ' blocks done. Window complete.';
+  else if (!w.daysLeft) line = w.left + ' block' + (w.left === 1 ? '' : 's') + ' left over. The window has ended.';
+  else line = w.left + ' block' + (w.left === 1 ? '' : 's') + ' left in ' + w.daysLeft + ' day' + (w.daysLeft === 1 ? '' : 's') + ', about ' + (w.perDay % 1 ? w.perDay.toFixed(1) : w.perDay) + ' a day to stay on track.';
+  return '<div class="wwin"><div class="row1"><span class="wl">' + label + '</span><span class="muted" style="font-size:12.5px">' + range + '</span></div>' +
+    '<div class="bar sm" role="progressbar" aria-label="Blocks done in this window" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + w.pct + '"><b style="width:' + w.pct + '%"></b></div>' +
+    '<div class="row1" style="margin-top:6px"><span style="font-size:13.5px;font-weight:600">' + w.done + ' of ' + w.total + ' done</span><span class="muted" style="font-size:12.5px">' + (w.daysLeft ? w.daysLeft + ' day' + (w.daysLeft === 1 ? '' : 's') + ' left' : 'ended') + '</span></div>' +
+    '<div class="muted" style="font-size:12.5px;margin-top:4px">' + line + '</div></div>';
+}
+function windowCard(P) { return '<div class="level wonly">' + windowBlock(P) + '</div>'; }
 function levelCard(P) {
   const pr = progressInfo(P);
   return '<div class="level"><div class="row1"><span class="lv">PROGRAM ' + pr.pct + '%</span><span class="muted" style="font-size:13px">' + pr.done + ' of ' + pr.total + ' blocks</span></div>' +
     '<div class="bar" role="progressbar" aria-label="Program completed" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pr.pct + '"><b style="width:' + pr.pct + '%"></b></div>' +
-    '<div class="muted" style="font-size:12.5px;margin-top:6px">Every block you finish moves this up.</div></div>';
+    '<div class="muted" style="font-size:12.5px;margin-top:6px">Every block you finish moves this up.</div>' + windowBlock(P) + '</div>';
 }
 function todayView(P) {
   const t = todayStr(); const ds = S.date || t; const d = parseD(ds);
@@ -1220,7 +1263,7 @@ function todayView(P) {
 
   return '<div class="hero"><div class="eyebrow">' + DAYS_LONG[dow] + ' ' + d.getDate() + ' ' + MONTHS[d.getMonth()] + ' · Week ' + programWeek(P, ds) + '</div>' +
     '<h1>' + title + '</h1>' + (segs ? '<div class="segs" aria-hidden="true">' + segs + '</div>' : '') + '</div>' +
-    levelCard(P) +
+    windowCard(P) +
     (P.note ? '<div class="coach"><span class="av">' + esc(initials) + '</span><span><b>' + esc(P.physio) + ':</b> ' + esc(P.note) + '</span></div>' : '') +
     '<div class="days" role="group" aria-label="Pick a day">' + strip + '</div>' + pchips +
     (rows ? '<div class="list">' + rows + '</div>' : '<div class="empty">' + (info.planned ? (Object.keys(P.moves || {}).some(k => P.moves[k].from === ds) ? 'Everything planned for this day was moved to another day.' : 'Rest up. Sleep and food are part of the plan.') : 'Your physio has not set this day yet.') + '</div>') +
@@ -1602,12 +1645,13 @@ function blocksTab(P) {
     (rows || '<div class="empty" style="margin-top:14px">No blocks yet. Create your first one.</div>') ;
 }
 function profileTab(P) {
-  if (!S.draft || S.draft.__for !== P.id) S.draft = { __for: P.id, name: P.name, age: P.age, injury: P.injury, goal: P.goal, physio: P.physio, physioEmail: P.physioEmail || '', note: P.note, appointment: P.appointment || '', started: P.started };
+  if (!S.draft || S.draft.__for !== P.id) S.draft = { __for: P.id, name: P.name, age: P.age, injury: P.injury, goal: P.goal, physio: P.physio, physioEmail: P.physioEmail || '', note: P.note, appointment: P.appointment || '', started: P.started, goalmode: P.goalmode || 'week' };
   const D = S.draft; const f = (k, label, type) => '<div class="field"><label for="pf_' + k + '">' + label + '</label><input id="pf_' + k + '" class="input" type="' + (type || 'text') + '" data-f="' + k + '" value="' + esc(D[k]) + '"></div>';
   return '<div class="h2" style="margin-top:20px">Profile</div><div class="phrow" style="margin-bottom:14px">' + phav(P.photo, 'p') + '<span><label class="btn sm filebtn">' + (P.photo ? 'Change photo' : 'Add photo') + '<input type="file" accept="image/*" data-file="pphoto" hidden></label>' + (P.photo ? ' <button class="btn sm" data-act="rmpphoto">Remove</button>' : '') + '</span></div><div class="fgrid">' + f('name', 'Name') + f('age', 'Age') + f('physio', 'Physio name') + f('physioEmail', 'Physio email', 'email') + '</div>' +
     '<div class="fgrid" style="margin-top:12px">' + f('injury', 'Injury') + f('goal', 'Goal') + '</div>' +
     '<div class="field" style="margin-top:12px"><label for="pf_note">Note shown on their home screen</label><textarea id="pf_note" class="input" data-f="note">' + esc(D.note) + '</textarea></div>' +
     '<div class="fgrid" style="margin-top:12px">' + f('appointment', 'Next appointment', 'datetime-local') + f('started', 'Program start (Monday)', 'date') + '</div>' +
+    '<div class="field" style="margin-top:12px"><label for="pf_goalmode">Program target window</label><select id="pf_goalmode" class="input" data-f="goalmode"><option value="week"' + (D.goalmode !== 'appt' ? ' selected' : '') + '>Weekly (Monday to Sunday)</option><option value="appt"' + (D.goalmode === 'appt' ? ' selected' : '') + '>Until the next appointment</option></select><div class="muted" style="font-size:12.5px;margin-top:6px">Shown to the patient under their program percentage so they can see how long they have to finish. Needs a next appointment date to work.</div></div>' +
     '<div class="actions"><button class="btn accent" data-act="saveprofile">Save profile</button>' + (P.archived ? '<button class="btn" data-act="restore">Restore patient</button>' : '<button class="btn" data-act="archive">Archive patient</button>') + '<button class="btn danger" data-act="delpatient">Delete patient</button></div>';
 }
 
@@ -1904,7 +1948,7 @@ document.addEventListener('click', async e => {
     case 'saveprofile': {
       const D = S.draft;
       if (!String(D.name).trim()) { showToast('A name is needed'); break; }
-      editPlan(p => { ['name', 'age', 'injury', 'goal', 'physio', 'physioEmail', 'note', 'appointment', 'started'].forEach(k => { p[k] = D[k]; }); if (!p.started) p.started = dstr(mondayOf(new Date())); });
+      editPlan(p => { ['name', 'age', 'injury', 'goal', 'physio', 'physioEmail', 'note', 'appointment', 'started', 'goalmode'].forEach(k => { p[k] = D[k]; }); if (p.goalmode === 'appt' && (!p.goalFrom || p.goalApptFor !== p.appointment)) { p.goalFrom = dstr(new Date()); p.goalApptFor = p.appointment; } if (!p.started) p.started = dstr(mondayOf(new Date())); });
       S.draft = null; showToast('Profile saved'); break;
     }
     case 'archive': {
